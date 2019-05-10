@@ -34,7 +34,8 @@ def main():
     con = libtcod.console_new(screen_width, screen_height) 
     
     # Inicialização do mapa
-    game_map = GameMap(map_width, map_height)
+    game_map = GameMap(map_width, map_height) # Definindo o tamanho do mapa
+    game_map.make_map() # Gerando o mapa em si
     
     # Inputs do jogador
     key = libtcod.Key() # Guarda input do teclado em key
