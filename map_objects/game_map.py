@@ -2,6 +2,7 @@ from map_objects.tile import Tile
 
 class GameMap:
     # Uma classe para inicialização de mapa
+    
     def __init__(self, width, height):
         self.width = width # Largura do mapa
         self.height = height # Altura do mapa
@@ -20,4 +21,11 @@ class GameMap:
         tiles[32][22].block_sight = True
         
         return tiles
+    
+    # Checa se o tile é bloqueado
+    def is_blocked(self, x, y):
+        if self.tiles[x][y].blocked:
+            return True
+        
+        return False
  
