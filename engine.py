@@ -17,6 +17,9 @@ def main():
     # Iniciando a tela com dimensões da tela, título e um valor boolean false para iniciar minimizado
     libtcod.console_init_root(screen_width, screen_height, 'Urban Rogue', False)
     
+    # Definindo uma instância de console
+    con = libtcod.console_new(screen_width, screen_height) 
+    
     # Inputs do jogador
     key = libtcod.Key() # Guarda input do teclado em key
     mouse = libtcod.Mouse() # Guarda input do mouse em mouse
@@ -25,9 +28,12 @@ def main():
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse) # Captura eventos de input, atualizando os dados de key e mouse
         
-        libtcod.console_set_default_foreground(0, libtcod.white) # Definindo a cor do simbolo '@' como branco
-        libtcod.console_put_char(0, player_x, player_y, '@', libtcod.BKGND_NONE) # Desenhando no console 0, que estamos usando, '@' nas coordenadas x e y, com background vazio
+        libtcod.console_set_default_foreground(con, libtcod.white) # Definindo a cor do simbolo '@' como branco
+        libtcod.console_put_char(con, player_x, player_y, '@', libtcod.BKGND_NONE) # Desenhando no console 0, que estamos usando, '@' nas coordenadas x e y, com background vazio
+        libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0)
         libtcod.console_flush() # Apresenta os elementos da tela
+        
+        libtcod.console_put_char(con, player_x, player_y, ' ', libtcod.BKGND_NONE) # Desenha o caminho do personagem como vazio para não repetir o simbolo '@'
         
         # Input do teclado
         action = handle_keys(key)
