@@ -8,6 +8,10 @@ def main():
     screen_width = 80
     screen_height = 50
     
+    # Dimensões do mapa
+    map_width = 80
+    map_height = 45
+    
     # Posição dos elementos de jogo (função int usada para cast de resultado de divisão para um integer)
     player = Entity(int(screen_width / 2), int(screen_height / 2), '@', libtcod.white) # Desenha o personagem
     npc = Entity(int(screen_width / 2 - 5), int(screen_height / 2), '@', libtcod.yellow) # Desenha o npc
