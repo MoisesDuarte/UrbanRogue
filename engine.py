@@ -13,6 +13,11 @@ def main():
     map_width = 80
     map_height = 45
     
+    # Dimensões das salas
+    room_max_size = 10
+    room_min_size = 6
+    max_rooms = 30
+    
     # Cores dos tiles
     colors = {
         'dark_wall': libtcod.Color(0, 0, 100),
@@ -35,7 +40,7 @@ def main():
     
     # Inicialização do mapa
     game_map = GameMap(map_width, map_height) # Definindo o tamanho do mapa
-    game_map.make_map() # Gerando o mapa em si
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player) # Gerando o mapa em si
     
     # Inputs do jogador
     key = libtcod.Key() # Guarda input do teclado em key
