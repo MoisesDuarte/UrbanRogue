@@ -1,4 +1,5 @@
 import tcod as libtcod
+
 from entity import Entity
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
@@ -20,8 +21,8 @@ def main():
     
     # Cores dos tiles
     colors = {
-        'dark_wall': libtcod.Color(0, 0, 100),
-        'dark_ground': libtcod.Color(50, 50, 150)
+        'dark_wall': libtcod.Color(49, 46, 47),
+        'dark_ground': libtcod.Color(81, 94, 46)
     }
     
     # Posição dos elementos de jogo (função int usada para cast de resultado de divisão para um integer)
