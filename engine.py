@@ -1,4 +1,5 @@
 import tcod as libtcod
+from input_handlers import handle_keys
 
 def main():
     # Dimensões da tela
@@ -28,10 +29,25 @@ def main():
         libtcod.console_put_char(0, player_x, player_y, '@', libtcod.BKGND_NONE) # Desenhando no console 0, que estamos usando, '@' nas coordenadas x e y, com background vazio
         libtcod.console_flush() # Apresenta os elementos da tela
         
-        # Fechar jogo
-        key = libtcod.console_check_for_keypress() # Guarda o input do teclado em key
-        if key.vk == libtcod.KEY_ESCAPE: # Se key for igual a esc, retorna True, saindo do loop e fechando o jogo
+        # Input do teclado
+        action = handle_keys(key)
+        
+        # Capturando retorno em action e seu conteúdo
+        move = action.get('move') 
+        exit = action.get('exit') 
+        fullscreen = action.get('fullscreen')   
+        
+        if move:
+            dx, dy = move
+            player_x += dx
+            player_y += dy
+        
+        if exit:
             return True
+        
+        if fullscreen:
+            libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())   
+        
     
 # A função main apenas será executada quando o script for executado com o comando 'python engine.py'
 if __name__ == '__main__':

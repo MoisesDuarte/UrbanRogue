@@ -7,7 +7,7 @@ def handle_keys(key):
     elif key.vk == libtcod.KEY_DOWN: # Seta para baixo
         return {'move': (0, 1)}
     elif key.vk == libtcod.KEY_LEFT: # Seta para esquerda
-        return {'move': (1, 0)}
+        return {'move': (-1, 0)}
     elif key.vk == libtcod.KEY_RIGHT: # Seta para direita
         return {'move': (1, 0)}
     
