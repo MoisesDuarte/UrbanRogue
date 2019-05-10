@@ -1,6 +1,7 @@
 import tcod as libtcod
 from entity import Entity
 from input_handlers import handle_keys
+from render_functions import clear_all, render_all
 
 def main():
     # Dimensões da tela
@@ -28,13 +29,10 @@ def main():
     # Loop do jogo
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse) # Captura eventos de input, atualizando os dados de key e mouse
-        
-        libtcod.console_set_default_foreground(con, libtcod.white) # Definindo a cor do simbolo '@' como branco
-        libtcod.console_put_char(con, player.x, player.y, '@', libtcod.BKGND_NONE) # Desenhando no console 0, que estamos usando, '@' nas coordenadas x e y, com background vazio
-        libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0)
+        render_all(con, entities, screen_width, screen_height) # Chamando função render_all de render_functions para desenhar todas entidades da lista entities na tela
         libtcod.console_flush() # Apresenta os elementos da tela
         
-        libtcod.console_put_char(con, player.x, player.y, ' ', libtcod.BKGND_NONE) # Desenha o caminho do personagem como vazio para não repetir o simbolo '@'
+        clear_all(con, entities) # Chamando função clear_all de render_functions para limpar rastro de personagem
         
         # Input do teclado
         action = handle_keys(key)
@@ -44,6 +42,7 @@ def main():
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
+        # Processando o retorno de input
         if move:
             dx, dy = move
             player.move(dx, dy)

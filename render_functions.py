@@ -14,9 +14,9 @@ def clear_all(con, entities):
   
 # Desenha a entidade      
 def draw_entity(con, entity):
-    libtcod.console_set_default_background(con, entity.color)
-    libtcod.console_put_char(con, entity.x, entity,y, entity.char, libtcod.BKGND_NONE)
+    libtcod.console_set_default_foreground(con, entity.color) # Definindo a cor da entidade
+    libtcod.console_put_char(con, entity.x, entity.y, entity.char, libtcod.BKGND_NONE) # Desenhando no console as coordenadas x e y, com background vazio
     
 # Apaga o caracter que representa esse objeto (no caso, seu rastro)
-def clear_entity(con, entity)
-    libtcod.console_put_char(con, entity.x, entity.y, '', libtcod.BKGND_NONE)
+def clear_entity(con, entity):
+    libtcod.console_put_char(con, entity.x, entity.y, ' ', libtcod.BKGND_NONE)
