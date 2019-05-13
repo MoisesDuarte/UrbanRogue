@@ -1,6 +1,7 @@
 import tcod as libtcod
 
 from entity import Entity
+from fov_functions import initialize_fov, recompute_fov
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
@@ -19,10 +20,17 @@ def main():
     room_min_size = 6
     max_rooms = 30
     
+    # Atributos para FOV (Field of View)
+    fov_algorithm = 0
+    fov_light_walls = True
+    fov_radius = 10
+    
     # Cores dos tiles
     colors = {
         'dark_wall': libtcod.Color(49, 46, 47),
-        'dark_ground': libtcod.Color(81, 94, 46)
+        'dark_ground': libtcod.Color(81, 94, 46),
+        'light_wall': libtcod.Color(99, 92, 90),
+        'light_ground': libtcod.Color(157, 159, 55)
     }
     
     # Posição dos elementos de jogo (função int usada para cast de resultado de divisão para um integer)
@@ -43,6 +51,10 @@ def main():
     game_map = GameMap(map_width, map_height) # Definindo o tamanho do mapa
     game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player) # Gerando o mapa em si
     
+    # Inicialização do FOV
+    fov_recompute = True # variavel para processamento de fov
+    fov_map = initialize_fov(game_map)
+    
     # Inputs do jogador
     key = libtcod.Key() # Guarda input do teclado em key
     mouse = libtcod.Mouse() # Guarda input do mouse em mouse
@@ -50,7 +62,15 @@ def main():
     # Loop do jogo
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse) # Captura eventos de input, atualizando os dados de key e mouse
-        render_all(con, entities, game_map, screen_width, screen_height, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
+        
+        # Chamada do metodo recompute_fov se fov_recompute = True
+        if fov_recompute:
+            recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
+        
+        render_all(con, entities, game_map, fov_map, fov_recompute, screen_width, screen_height, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
+        
+        fov_recompute = False
+        
         libtcod.console_flush() # Apresenta os elementos da tela
         
         clear_all(con, entities) # Chamando função clear_all de render_functions para limpar rastro de personagem
@@ -69,6 +89,8 @@ def main():
             # Verifica se a tile adjancente é bloqueada
             if not game_map.is_blocked(player.x + dx, player.y + dy):
                 player.move(dx, dy) # Incremento para movimentação de jogador
+                
+                fov_recompute = True # Recalcula FOV a cada passo do jogador
         
         if exit:
             return True

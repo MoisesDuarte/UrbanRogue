@@ -7,4 +7,6 @@ class Tile:
         if block_sight is None: # Se valor for none, mudar para blocked
             block_sight = blocked
             
+            self.explored = False # Memória de tiles já exploradas pelo jogador para fov
+            
         self.block_sight = block_sight
