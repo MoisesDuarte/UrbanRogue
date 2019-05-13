@@ -10,3 +10,8 @@ Um roguelike básico programado em Python 3.7 com biblioteca Libtcod
 
 ### 3 - Compilar e executar engine.py
 > py engine.py
+
+## Referências
+- Comunidade RogueBasin: http://www.roguebasin.com/index.php?title=Articles
+- Documentação da Biblioteca Libtcod Para Python: https://python-tcod.readthedocs.io/en/latest/
+- Tutorial por Jotaf: http://rogueliketutorials.com/tutorials/tcod/
