@@ -111,9 +111,9 @@ class GameMap:
             
             if not any([entity for entity in entities if entity.x == x and entity.y == y]): # Checa se já não há um inimigo nas mesmas coordenadas
                 if randint(0, 100) < 80:
-                    monster = Entity(x, y, 'o', libtcod.desaturated_green) # Orc
+                    monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True)
                 else:
-                    monster = Entity(x, y, 'T', libtcod.darker_green) # Troll
+                    monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True)
                     
                 entities.append(monster) # Adiciona o monstro gerado a lista de entidade para renderizar
     

@@ -1,6 +1,6 @@
 import tcod as libtcod
 
-from entity import Entity
+from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
@@ -30,14 +30,14 @@ def main():
     
     # Cores dos tiles
     colors = {
-        'dark_wall': libtcod.Color(49, 46, 47),
-        'dark_ground': libtcod.Color(81, 94, 46),
-        'light_wall': libtcod.Color(99, 92, 90),
-        'light_ground': libtcod.Color(157, 159, 55)
+        'dark_wall': libtcod.Color(0, 0, 100),
+        'dark_ground': libtcod.Color(50, 50, 150),
+        'light_wall': libtcod.Color(130, 110, 50),
+        'light_ground': libtcod.Color(200, 180, 50)
     }
     
     # Posição dos elementos de jogo (função int usada para cast de resultado de divisão para um integer)
-    player = Entity(0, 0, '@', libtcod.white)
+    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True)
     entities = [player]
     
     # Especificando arquivo de fonte a ser usada e o tipo de arquivo
@@ -88,11 +88,19 @@ def main():
         # Processando o retorno de input
         if move:
             dx, dy = move
+            destination_x = player.x + dx
+            destination_y = player.y + dy
+            
             # Verifica se a tile adjancente é bloqueada
-            if not game_map.is_blocked(player.x + dx, player.y + dy):
-                player.move(dx, dy) # Incremento para movimentação de jogador
+            if not game_map.is_blocked(destination_x, destination_y):
+                target = get_blocking_entities_at_location(entities, destination_x, destination_y) # Checa se destino está bloqueado
                 
-                fov_recompute = True # Recalcula FOV a cada passo do jogador
+                if target:
+                    print('Você chutou ' + target.name + ' nos joelhos, lhe causando terríveis caimbrãs!')
+                else:
+                    player.move(dx, dy) # Incremento para movimentação de jogador
+                    
+                    fov_recompute = True # Recalcula FOV a cada passo do jogador
         
         if exit:
             return True
