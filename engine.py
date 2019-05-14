@@ -75,7 +75,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
         
-        render_all(con, entities, game_map, fov_map, fov_recompute, screen_width, screen_height, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
+        render_all(con, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
         
         fov_recompute = False
         
@@ -143,6 +143,7 @@ def main():
                 if entity.ai:
                     enemy_turn_results = entity.ai.take_turn(player, fov_map, game_map, entities)
                     
+                    # Controle de log do turno inimigo
                     for enemy_turn_result in enemy_turn_results:
                         message = enemy_turn_result.get('message')
                         dead_entity = enemy_turn_result.get('dead')
