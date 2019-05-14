@@ -2,6 +2,7 @@ import tcod as libtcod
 
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
+from game_states import GameStates
 from input_handlers import handle_keys
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all
@@ -61,6 +62,8 @@ def main():
     key = libtcod.Key() # Guarda input do teclado em key
     mouse = libtcod.Mouse() # Guarda input do mouse em mouse
     
+    game_state = GameStates.PLAYERS_TURN # Inicia estado de jogo como turno do jogador
+    
     # Loop do jogo
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse) # Captura eventos de input, atualizando os dados de key e mouse
@@ -85,8 +88,9 @@ def main():
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
+        # Controle de turno (Jogador)
         # Processando o retorno de input
-        if move:
+        if move and game_state == GameStates.PLAYERS_TURN:
             dx, dy = move
             destination_x = player.x + dx
             destination_y = player.y + dy
@@ -101,12 +105,22 @@ def main():
                     player.move(dx, dy) # Incremento para movimentação de jogador
                     
                     fov_recompute = True # Recalcula FOV a cada passo do jogador
+                    
+                    game_state = GameStates.ENEMY_TURN # Inicia o turno do inimigo após movimento do jogador
         
         if exit:
             return True
         
         if fullscreen:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())   
+            
+        # Controle de turno (Inimigo)
+        if game_state == GameStates.ENEMY_TURN:
+            for entity in entities:
+                if entity != player:
+                    print("O " + entity.name + ' pondera sua existência, mas logo desiste!')
+                    
+            game_state = GameStates.PLAYERS_TURN # Volta para o turno do jogador
         
     
 # A função main apenas será executada quando o script for executado com o comando 'python engine.py'
