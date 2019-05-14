@@ -1,6 +1,7 @@
 import tcod as libtcod
 
 from components.fighter import Fighter
+from death_functions import kill_monster, kill_player
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
 from game_states import GameStates
@@ -90,6 +91,8 @@ def main():
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
+        player_turn_results = [] # lista para resultados de embates e ações em turno
+        
         # Controle de turno (Jogador)
         # Processando o retorno de input
         if move and game_state == GameStates.PLAYERS_TURN:
@@ -102,27 +105,66 @@ def main():
                 target = get_blocking_entities_at_location(entities, destination_x, destination_y) # Checa se destino está bloqueado
                 
                 if target:
-                    print('Você chutou ' + target.name + ' nos joelhos, lhe causando terríveis caimbrãs!')
+                    attack_results = player.fighter.attack(target)
+                    player_turn_results.extend(attack_results)
                 else:
                     player.move(dx, dy) # Incremento para movimentação de jogador
                     
                     fov_recompute = True # Recalcula FOV a cada passo do jogador
                     
-                    game_state = GameStates.ENEMY_TURN # Inicia o turno do inimigo após movimento do jogador
+                game_state = GameStates.ENEMY_TURN # Inicia o turno do inimigo após movimento do jogador
         
         if exit:
             return True
         
         if fullscreen:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())   
+        
+        # Controle do log do turno do jogador
+        for player_turn_result in player_turn_results:
+            message = player_turn_result.get('message')
+            dead_entity = player_turn_result.get('dead')
             
+            if message:
+                print(message)
+            
+            # Morte de entidades
+            if dead_entity:
+                if dead_entity == player:
+                    message, game_state = kill_player(dead_entity)
+                else: 
+                    message = kill_monster(dead_entity)
+                
+                print(message)
+                        
         # Controle de turno (Inimigo)
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
                 if entity.ai:
-                    entity.ai.take_turn(player, fov_map, game_map, entities)
+                    enemy_turn_results = entity.ai.take_turn(player, fov_map, game_map, entities)
                     
-            game_state = GameStates.PLAYERS_TURN # Volta para o turno do jogador
+                    for enemy_turn_result in enemy_turn_results:
+                        message = enemy_turn_result.get('message')
+                        dead_entity = enemy_turn_result.get('dead')
+                        
+                        if message:
+                            print(message)
+                           
+                        if dead_entity:
+                            if dead_entity == player:
+                                message, game_state = kill_player(dead_entity)
+                            else: 
+                                message = kill_monster(dead_entity)
+                                
+                            print(message)
+                            
+                            if game_state == GameStates.PLAYER_DEAD:
+                                break
+                            
+                    if game_state == GameStates.PLAYER_DEAD:
+                        break
+            else:    
+                game_state = GameStates.PLAYERS_TURN # Volta para o turno do jogador
         
     
 # A função main apenas será executada quando o script for executado com o comando 'python engine.py'
