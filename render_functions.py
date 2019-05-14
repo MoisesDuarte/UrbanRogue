@@ -1,5 +1,13 @@
 import tcod as libtcod
 
+from enum import Enum
+
+# Define 'camadas' de renderização
+class RenderOrder(Enum):
+    CORPSE = 1
+    ITEM = 2
+    ACTOR = 3
+
 # Renderiza todo os elementos de tela
 def render_all(con, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height, colors):
     # Desenha todas as tiles do mapa
@@ -23,9 +31,11 @@ def render_all(con, entities, player, game_map, fov_map, fov_recompute, screen_w
                         libtcod.console_set_char_background(con, x, y, colors.get('dark_wall'), libtcod.BKGND_SET) # Definindo o background como tile parede
                     else:  
                         libtcod.console_set_char_background(con, x, y, colors.get('dark_ground'), libtcod.BKGND_SET) # Definindo o background como tile chão
+    
+    entities_in_render_order = sorted(entities, key=lambda x: x.render_order.value) # Retorna a lista de render
             
     # Desenha todas as entidades da lista entities com draw_entity   
-    for entity in entities:
+    for entity in entities_in_render_order:
         draw_entity(con, entity, fov_map) 
         
     # Desenha o contador de hp do jogador

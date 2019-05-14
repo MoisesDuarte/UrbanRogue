@@ -1,9 +1,9 @@
 import tcod as libtcod
 
+from render_functions import RenderOrder
 from game_states import GameStates
 
 # Funções para processamento de morte de entidade
-
 # Jogador morre
 def kill_player(player):
     player.char = '%'
@@ -21,5 +21,6 @@ def kill_monster(monster):
     monster.fighter = None
     monster.ai = None
     monster.name = 'Restos mortais de ' + monster.name
+    monster.render_order = RenderOrder.CORPSE
     
     return death_message
