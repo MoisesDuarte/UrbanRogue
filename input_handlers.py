@@ -1,15 +1,27 @@
 import tcod as libtcod
 
 def handle_keys(key):
-    # Teclas de movimento
-    if key.vk == libtcod.KEY_UP: # Seta para cima
+    key_char = chr(key.c) # Retorna o caracter da tecla pressionada
+    
+    # Movimento Cardinal
+    if key.vk == libtcod.KEY_UP or key_char == 'k':
         return {'move': (0, -1)} # Retornando valor com x/y axis dicionario 'move' para não confundir com outros possiveis uso da tecla
-    elif key.vk == libtcod.KEY_DOWN: # Seta para baixo
+    elif key.vk == libtcod.KEY_DOWN or key_char == 'j':
         return {'move': (0, 1)}
-    elif key.vk == libtcod.KEY_LEFT: # Seta para esquerda
+    elif key.vk == libtcod.KEY_LEFT or key_char == 'h':
         return {'move': (-1, 0)}
-    elif key.vk == libtcod.KEY_RIGHT: # Seta para direita
+    elif key.vk == libtcod.KEY_RIGHT or key_char == 'l':
         return {'move': (1, 0)}
+    # Movimento Diagonal
+    elif key_char == 'y':
+        return {'move': (-1, -1)}
+    elif key_char == 'u':
+        return {'move': (1, -1)}
+    elif key_char == 'b':
+        return {'move': (-1, 1)}
+    elif key_char == 'n':
+        return {'move': (1, s1)}
+   
     
     # Tecla fullscreen
     if key.vk == libtcod.KEY_ENTER and key.lalt:

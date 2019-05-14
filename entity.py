@@ -1,3 +1,5 @@
+import tcod as libtcod
+
 import math
 
 class Entity:
@@ -36,7 +38,47 @@ class Entity:
         
         if not (game_map.is_blocked(self.x + dx, self.y + dy) or get_blocking_entities_at_location(entities, self.x + dx, self.y + dy)):
             self.move(dx, dy)
-           
+    
+    # Algoritmo A* para movimento diagonal
+    def move_astar(self, target, entities, game_map):
+        # Criar um mapa fov com as dimensões do mapa
+        fov = libtcod.map_new(game_map.width, game_map.height)
+
+        # Checa o mapa atual a cada turno e define todas paredes como impassaveis
+        for y1 in range(game_map.height):
+            for x1 in range(game_map.width):
+                libtcod.map_set_properties(fov, x1, y1, not game_map.tiles[x1][y1].block_sight,
+                                           not game_map.tiles[x1][y1].blocked)
+
+        # Checa todas as entidades para ver se não sera preciso circular por ela
+        # Checa também se a entidade não é self ou target
+        for entity in entities:
+            if entity.blocks and entity != self and entity != target:
+                # Set the tile as a wall so it must be navigated around
+                libtcod.map_set_properties(fov, entity.x, entity.y, True, False)
+
+        # Alocação de um path *A
+        # 1.41 é o valor padrão de movimento diagonal
+        my_path = libtcod.path_new_using_map(fov, 1.41)
+
+        # Processa o caminho entre as coordenadas proprias da entidade (self) e as do seu alvo (target)
+        libtcod.path_compute(my_path, self.x, self.y, target.x, target.y)
+
+        # Checa se o caminho existe e se ele é menor que 25 tiles
+        if not libtcod.path_is_empty(my_path) and libtcod.path_size(my_path) < 25:
+            # Procura as proximas coordenadas do path computado
+            x, y = libtcod.path_walk(my_path, True)
+            if x or y:
+                # Define as coordenadas proprias para a proxima tile do caminho
+                self.x = x
+                self.y = y
+        else:
+            # A velha função como backup, caso for necessario (inimigo bloqueia um corredor, etc)
+            self.move_towards(target.x, target.y, game_map, entities)
+
+        # Deleta o caminho para liberar memória
+        libtcod.path_delete(my_path)
+    
     # Devolve a distancia entre duas coordenadas
     def distance_to(self, other):
         dx = other.x - self.x
