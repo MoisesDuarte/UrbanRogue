@@ -1,5 +1,6 @@
 import tcod as libtcod
 
+from components.fighter import Fighter
 from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
 from game_states import GameStates
@@ -38,7 +39,8 @@ def main():
     }
     
     # Posição dos elementos de jogo (função int usada para cast de resultado de divisão para um integer)
-    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True)
+    fighter_component = Fighter(hp=30, defense=2, power=5)
+    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True, fighter=fighter_component)
     entities = [player]
     
     # Especificando arquivo de fonte a ser usada e o tipo de arquivo
@@ -117,8 +119,8 @@ def main():
         # Controle de turno (Inimigo)
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
-                if entity != player:
-                    print("O " + entity.name + ' pondera sua existência, mas logo desiste!')
+                if entity.ai:
+                    entity.ai.take_turn(player, fov_map, game_map, entities)
                     
             game_state = GameStates.PLAYERS_TURN # Volta para o turno do jogador
         
