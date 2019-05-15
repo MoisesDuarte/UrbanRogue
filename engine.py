@@ -57,7 +57,7 @@ def main():
     entities = [player]
     
     # Especificando arquivo de fonte a ser usada e o tipo de arquivo
-    libtcod.console_set_custom_font('arial10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_TCOD)
+    libtcod.console_set_custom_font('terminus10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
     
     # Iniciando a tela com dimensões da tela, título e um valor boolean false para iniciar minimizado
     libtcod.console_init_root(screen_width, screen_height, 'Urban Rogue', False)
