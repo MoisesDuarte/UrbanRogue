@@ -1,19 +1,21 @@
 import tcod as libtcod
 
-from render_functions import RenderOrder
+from game_messages import Message
+
 from game_states import GameStates
+
+from render_functions import RenderOrder
 
 # Funções para processamento de morte de entidade
 # Jogador morre
 def kill_player(player):
     player.char = '%'
     player.color = libtcod.dark_red
-    
-    return 'Você morreu!', GameStates.PLAYER_DEAD
+    return Message('Você morreu!', libtcod.red), GameStates.PLAYER_DEAD
 
 # Monstro morre, limpa entidade
 def kill_monster(monster):
-    death_message = '{0} está morto!'.format(monster.name.capitalize())
+    death_message = Message('{0} está morto!'.format(monster.name.capitalize()), libtcod.orange)
     
     monster.char = '%'
     monster.color = libtcod.dark_red

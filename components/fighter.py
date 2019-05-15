@@ -1,3 +1,7 @@
+import tcod as libtcod
+
+from  game_messages import Message
+
 # Classe que define se uma entidade é um objeto 'lutador' (Jogador ou inimigo)
 class Fighter:
     def __init__(self, hp, defense, power):
@@ -24,10 +28,10 @@ class Fighter:
         damage = self.power - target.fighter.defense
         
         if damage > 0:
-            results.append({'message':'{0} ataca {1}, subtraindo {2} hit points.'.format(
-                self.owner.name.capitalize(), target.name, str(damage))})
+            results.append({'message': Message('{0} ataca {1} por {2} hp.'.format(
+                self.owner.name.capitalize(), target.name, str(damage)), libtcod.white)})
             results.extend(target.fighter.take_damage(damage)) # Resultado da função takedamage
         else:
-            results.append({'message':'{0} ataca {1}, mas não causa nenhum dano.'.format(self.owner.name.capitalize(), target.name)})
+            results.append({'message':Message('{0} ataca {1} mas não causa dano.'.format(self.owner.name.capitalize(), target.name), libtcod.white)})
 
         return results
