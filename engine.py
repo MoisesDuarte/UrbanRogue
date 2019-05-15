@@ -14,9 +14,14 @@ def main():
     screen_width = 80
     screen_height = 50
     
+    # Dimensões da interface
+    bar_width = 20
+    panel_height = 7
+    panel_y = screen_height - panel_height
+    
     # Dimensões do mapa
     map_width = 80
-    map_height = 45
+    map_height = 43
     
     # Dimensões das salas
     room_max_size = 10
@@ -50,8 +55,9 @@ def main():
     # Iniciando a tela com dimensões da tela, título e um valor boolean false para iniciar minimizado
     libtcod.console_init_root(screen_width, screen_height, 'Urban Rogue', False)
     
-    # Definindo uma instância de console
-    con = libtcod.console_new(screen_width, screen_height) 
+    # Definindo instâncias de console
+    con = libtcod.console_new(screen_width, screen_height) # Painel do jogo
+    panel = libtcod.console_new(screen_height, screen_height) # Painel da interface
     
     # Inicialização do mapa
     game_map = GameMap(map_width, map_height) # Definindo o tamanho do mapa
@@ -75,7 +81,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
         
-        render_all(con, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, screen_width, screen_height, bar_width, panel_height, panel_y, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
         
         fov_recompute = False
         
