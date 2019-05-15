@@ -91,7 +91,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
         
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
         
         fov_recompute = False
         
