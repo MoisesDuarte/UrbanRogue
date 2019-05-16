@@ -8,6 +8,7 @@ class Inventory:
         self.capacity = capacity
         self.items = []
         
+    # Função para adicionar item ao inventario
     def add_item(self, item):
         results = []
         
@@ -26,3 +27,29 @@ class Inventory:
             self.items.append(item)
             
         return results
+    
+    # Função para usar item do inventario
+    def use(self, item_entity, **kwargs):
+        results = []
+        
+        item_component = item_entity.item
+        
+        # Checa se item é 'usavel' em inventário
+        if item_component.use_function is None:
+            results.append({'message': Message('{0} não pode ser usado'.format(item_entity.name), libtcod.yellow)})
+        else:
+            kwargs = {**item_component.function_kwargs, **kwargs} # Concatena função com modificador para usar em function (ex: 'heal' == 4)
+            item_use_results = item_component.use_function(self.owner, **kwargs) 
+            
+            # Checa se item está marcado como consumido e o remove do inventário
+            for item_use_result in item_use_results:
+                if item_use_result.get('consumed'):
+                    self.remove_item(item_entity)
+                    
+            results.extend(item_use_results)
+            
+        return results
+    
+    # Função para remover item do inventario
+    def remove_item(self, item):
+        self.items.remove(item)

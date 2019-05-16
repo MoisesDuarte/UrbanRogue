@@ -159,7 +159,7 @@ def main():
         # Processando a chamada de index de itens do menu
         if inventory_index is not None and previous_game_state != GameStates.PLAYER_DEAD and inventory_index < len(player.inventory.items):
             item = player.inventory.items[inventory_index]
-            print(item)
+            player_turn_results.extend(player.inventory.use(item)) # 'Concatena' o resultado do uso do item ao result apresentado no log a cada turno
         
         if exit:
             # Verifica se inventário está aberto, para não fechar o jogo ao apertar esc no menu
@@ -176,6 +176,7 @@ def main():
             message = player_turn_result.get('message')
             dead_entity = player_turn_result.get('dead')
             item_added = player_turn_result.get('item_added')
+            item_consumed = player_turn_result.get('consumed')
             
             if message:
                 message_log.add_message(message)
@@ -193,6 +194,10 @@ def main():
             if item_added:
                 entities.remove(item_added)
                 
+                game_state = GameStates.ENEMY_TURN
+                
+            # Uso de item
+            if item_consumed:
                 game_state = GameStates.ENEMY_TURN
                         
         # Controle de turno (Inimigo)

@@ -10,6 +10,7 @@ class Fighter:
         self.defense = defense
         self.power = power
         
+    # Função para processamento de dano
     def take_damage(self, amount):
         results = [] # Lista para retornar 'resultados' do embate
         
@@ -20,8 +21,16 @@ class Fighter:
             results.append({'dead': self.owner})
             
         return results
+    
+    # Função para processamento de cura
+    def heal(self, amount):
+        self.hp += amount
         
-    # Função para ataque
+        # Check para não ultrapassar o max de hp da entidade
+        if self.hp > self.max_hp:
+            self.hp = self.max_hp        
+        
+    # Função para processamento de ataque
     def attack(self, target):
         results = [] # Lista para retornar 'resultados' do embate
         
