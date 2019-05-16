@@ -108,11 +108,14 @@ def main():
         # Input do teclado
         action = handle_keys(key, game_state)
         
-        # Capturando retorno em action e seu conteúdo
-        move = action.get('move') 
+        move = action.get('move') # Capturando retorno de action e guardando o valor de move
+        
         pickup = action.get('pickup')
+        
         show_inventory = action.get('show_inventory')
+        drop_inventory = action.get('drop_inventory')
         inventory_index = action.get('inventory_index')
+        
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
@@ -156,14 +159,24 @@ def main():
             previous_game_state = game_state
             game_state = GameStates.SHOW_INVENTORY
             
+        
+        # Processando o descarte de item
+        if drop_inventory:
+            previous_game_state = game_state
+            game_state = GameStates.DROP_INVENTORY    
+        
         # Processando a chamada de index de itens do menu
         if inventory_index is not None and previous_game_state != GameStates.PLAYER_DEAD and inventory_index < len(player.inventory.items):
             item = player.inventory.items[inventory_index]
-            player_turn_results.extend(player.inventory.use(item)) # 'Concatena' o resultado do uso do item ao result apresentado no log a cada turno
+            # Checa se é uso ou descarte de item
+            if game_state == GameStates.SHOW_INVENTORY:
+                player_turn_results.extend(player.inventory.use(item)) # 'Concatena' o resultado do uso do item ao result apresentado no log a cada turno
+            elif game_state == GameStates.DROP_INVENTORY:
+                player_turn_results.extend(player.inventory.drop_item(item))                                      
         
         if exit:
             # Verifica se inventário está aberto, para não fechar o jogo ao apertar esc no menu
-            if game_state == GameStates.SHOW_INVENTORY:
+            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
                 game_state = previous_game_state
             else:
                 return True
@@ -177,6 +190,7 @@ def main():
             dead_entity = player_turn_result.get('dead')
             item_added = player_turn_result.get('item_added')
             item_consumed = player_turn_result.get('consumed')
+            item_dropped = player_turn_result.get('item_dropped')
             
             if message:
                 message_log.add_message(message)
@@ -199,6 +213,13 @@ def main():
             # Uso de item
             if item_consumed:
                 game_state = GameStates.ENEMY_TURN
+                
+            # Descarte de item
+            if item_dropped:
+                entities.append(item_dropped)
+                
+                game_state = GameStates.ENEMY_TURN
+                
                         
         # Controle de turno (Inimigo)
         if game_state == GameStates.ENEMY_TURN:

@@ -53,3 +53,16 @@ class Inventory:
     # Função para remover item do inventario
     def remove_item(self, item):
         self.items.remove(item)
+        
+    # Função para descartar item do inventario e colocar ela aos pés do jogador (nas coordenadas)
+    def drop_item(self, item):
+        results = []
+        
+        # Define coordenadas do item como mesmas coordenadas do jogador
+        item.x = self.owner.x
+        item.y = self.owner.y
+        
+        self.remove_item(item) # Remove item do inventario
+        results.append({'item_dropped': item, 'message': Message('Você descartou {0}'.format(item.name), libtcod.yellow)})
+        
+        return results       

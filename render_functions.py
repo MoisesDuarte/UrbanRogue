@@ -73,9 +73,15 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0) # 'Desenha' o console definido em con
     
     # Checa o estado de jogo e desenha o inventário do jogador
-    if game_state == GameStates.SHOW_INVENTORY:
-        inventory_menu(con, 'Aperta a tecla ao lado de um item para usar, ou Esc para cancelar.\n', player.inventory, 50, screen_width, screen_height)
-    
+    if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
+        # Checa se é inventario de uso ou de descarte
+        if game_state == GameStates.SHOW_INVENTORY:
+            inventory_title = 'Aperta a tecla ao lado de um item para usar, ou Esc para cancelar.\n'
+        else:
+            inventory_title = 'Aperte a tecla ao lado de um item para descartar, ou Esc para cancelar.\n'
+            
+        inventory_menu(con, inventory_title, player.inventory, 50, screen_width, screen_height) # Chama o menu inventario
+            
     # Reseta um console para suas cores padrões com um caractere ' ' (espaço)
     libtcod.console_set_default_background(panel, libtcod.black)
     libtcod.console_clear(panel)
