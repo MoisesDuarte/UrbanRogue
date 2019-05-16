@@ -21,6 +21,10 @@ def handle_keys(key):
         return {'move': (-1, 1)}
     elif key_char == 'n':
         return {'move': (1, s1)}
+    
+    # Inventário
+    if key_char == 'g':
+        return {'pickup': True}
    
     
     # Tecla fullscreen

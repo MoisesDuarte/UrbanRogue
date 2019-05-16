@@ -5,7 +5,7 @@ class BasicMonster:
     def take_turn(self, target, fov_map, game_map, entities):
         results = []
 
-        monster = self.owner
+        monster = self.owner # Para poder acessar atributos referentes a classe da classe Entity
         if libtcod.map_is_in_fov(fov_map, monster.x, monster.y):
 
             if monster.distance_to(target) >= 2:

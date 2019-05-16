@@ -5,7 +5,7 @@ from render_functions import RenderOrder
 
 class Entity:
     # Um objeto genérico para representar jogadores, inimigos, itens, etc
-    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None):
+    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None, item=None, inventory=None):
         self.x = x
         self.y = y
         self.char = char
@@ -15,13 +15,21 @@ class Entity:
         self.render_order = render_order # Define a 'camada' de renderização
         self.fighter = fighter
         self.ai = ai
+        self.item = item
+        self.inventory = inventory
         
+        # Para acessar a classe por meio da entidade referente (ex: monster.name)
         if self.fighter:
             self.fighter.owner = self
             
         if self.ai:
             self.ai.owner = self
         
+        if self.item:
+            self.item.owner = self
+            
+        if self.inventory:
+            self.inventory.owner = self
         
     def move(self, dx, dy):
         # Move a entidade em determinado incremento
