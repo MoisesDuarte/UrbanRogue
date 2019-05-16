@@ -81,11 +81,13 @@ def main():
     # Inicialização do log
     message_log = MessageLog(message_x, message_width, message_height)
     
-    # Inputs do jogador
+    # Guardando inputs do jogador
     key = libtcod.Key() # Guarda input do teclado em key
     mouse = libtcod.Mouse() # Guarda input do mouse em mouse
     
+    # Estados de jogo
     game_state = GameStates.PLAYERS_TURN # Inicia estado de jogo como turno do jogador
+    previous_game_state = game_state # Guarda o estado anterior ao turno atual
     
     # Loop do jogo
     while not libtcod.console_is_window_closed():
@@ -95,7 +97,7 @@ def main():
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, fov_radius, fov_light_walls, fov_algorithm)
         
-        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
+        render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors, game_state) # Chamando função render_all de render_functions para desenhar o mapa e todas entidades da lista entities na tela
         
         fov_recompute = False
         
@@ -109,6 +111,7 @@ def main():
         # Capturando retorno em action e seu conteúdo
         move = action.get('move') 
         pickup = action.get('pickup')
+        show_inventory = action.get('show_inventory')
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
@@ -134,7 +137,8 @@ def main():
                     fov_recompute = True # Recalcula FOV a cada passo do jogador
                     
                 game_state = GameStates.ENEMY_TURN # Inicia o turno do inimigo após movimento do jogador
-                
+        
+        # Processando o pickup de items        
         elif pickup and game_state == GameStates.PLAYERS_TURN:
             for entity in entities:
                 if entity.item and entity.x == player.x and entity.y == player.y: # Checa se o jogador está em cima de um item
@@ -146,8 +150,17 @@ def main():
             else:
                 message_log.add_message(Message("Não há nada aqui para pegar.", libtcod.yellow))
         
+        # Processando a chamada de menu inventário
+        if show_inventory:
+            previous_game_state = game_state
+            game_state = GameStates.SHOW_INVENTORY
+        
         if exit:
-            return True
+            # Verifica se inventário está aberto, para não fechar o jogo ao apertar esc no menu
+            if game_state == GameStates.SHOW_INVENTORY:
+                game_state = previous_game_state
+            else:
+                return True
         
         if fullscreen:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())   

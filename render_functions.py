@@ -2,6 +2,10 @@ import tcod as libtcod
 
 from enum import Enum
 
+from game_states import GameStates
+
+from menus import inventory_menu
+
 # Define 'camadas' de renderização
 class RenderOrder(Enum):
     CORPSE = 1
@@ -37,7 +41,7 @@ def render_bar(panel, x, y, total_width, name, value, maximum, bar_color, back_c
                              '{0}: {1}/{2}'.format(name, value, maximum))
 
 # Renderiza todo os elementos de tela
-def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors):
+def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log, screen_width, screen_height, bar_width, panel_height, panel_y, mouse, colors, game_state):
     # Desenha todas as tiles do mapa
     if fov_recompute:
         for y in range(game_map.height):
@@ -67,6 +71,10 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
         draw_entity(con, entity, fov_map) 
           
     libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0) # 'Desenha' o console definido em con
+    
+    # Checa o estado de jogo e desenha o inventário do jogador
+    if game_state == GameStates.SHOW_INVENTORY:
+        inventory_menu(con, 'Aperta a tecla ao lado de um item para usar, ou Esc para cancelar.\n', player.inventory, 50, screen_width, screen_height)
     
     # Reseta um console para suas cores padrões com um caractere ' ' (espaço)
     libtcod.console_set_default_background(panel, libtcod.black)

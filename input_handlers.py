@@ -25,6 +25,8 @@ def handle_keys(key):
     # Inventário
     if key_char == 'g':
         return {'pickup': True}
+    elif key_char == 'i':
+        return {'show_inventory': True}
    
     
     # Tecla fullscreen
