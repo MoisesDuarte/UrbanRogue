@@ -26,7 +26,7 @@ class GameMap:
         return tiles
     
     # Gerador de mapa (cavocando salas em um mapa totalmente sólido)
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room):
+    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room, max_items_per_room):
         rooms = [] # Lista das salas geradas
         num_rooms = 0 # Guarda número de salas no mapa
         
@@ -76,7 +76,7 @@ class GameMap:
                         self.create_v_tunnel(prev_y, new_y, prev_x)
                         self.create_h_tunnel(prev_x, new_x, new_y)
                         
-                self.place_entities(new_room, entities, max_monsters_per_room) # Chama a função para gerar inimigos
+                self.place_entities(new_room, entities, max_monsters_per_room, max_items_per_room) # Chama a função para gerar inimigos
                         
                 rooms.append(new_room)
                 num_rooms += 1
@@ -104,31 +104,39 @@ class GameMap:
             self.tiles[x][y].blocked = False
             self.tiles[x][y].block_sight = False
             
-    # Gera e coloca inimigos
-    def place_entities(self, room, entities, max_monsters_per_room):
-        # Gera um número aleatório de inimigos
-        number_of_monsters = randint(0, max_monsters_per_room)
+    # Gera e coloca entidades de jogo
+    def place_entities(self, room, entities, max_monsters_per_room, max_items_per_room):   
+        number_of_monsters = randint(0, max_monsters_per_room)  # Gera um número aleatório de inimigos para sala
+        number_of_items = randint(0, max_items_per_room) # Gera um número aleatorio de itens para sala
         
+        # Colocando os inimigos em espaços aleatorios do mapa
         for i in range(number_of_monsters):
-            # Coloca o inimigo em um lugar aleatório de uma sala
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
             
             if not any([entity for entity in entities if entity.x == x and entity.y == y]): # Checa se já não há um inimigo nas mesmas coordenadas
                 if randint(0, 100) < 80:
                     fighter_component = Fighter(hp=10, defense=0, power=3)
-                    ai_component = BasicMonster()
-                    
+                    ai_component = BasicMonster()               
                     monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
                 else:
                     fighter_component = Fighter(hp=16, defense=1, power=4)
-                    ai_component = BasicMonster()
-                    
+                    ai_component = BasicMonster()           
                     monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
                     
-                entities.append(monster) # Adiciona o monstro gerado a lista de entidade para renderizar
-    
-    
+                entities.append(monster) # Adiciona o monstro gerado a lista de entidade para renderizar em RenderFunctions.render_all
+                
+        # Colocando itens em espaços aleatorios do mapa
+        for i in range(number_of_items):
+            x = randint(room.x1 + 1, room.x2 - 1)
+            y = randint(room.y1 + 1, room.y2 - 1)
+            
+            if not any([entity for entity in entities if entity.x == x and entity.y == y]):
+                item = Entity(x, y, '!', libtcod.violet, 'Frasco de Cura', render_order=RenderOrder.ITEM)
+        
+                entities.append(item)
+        
+            
     # Checa se o tile é bloqueado
     def is_blocked(self, x, y):
         if self.tiles[x][y].blocked:

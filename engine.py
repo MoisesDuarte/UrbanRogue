@@ -40,8 +40,9 @@ def main():
     fov_light_walls = True
     fov_radius = 10
     
-    # Atributos para geração de inimigos
+    # Atributos para geração de entidades
     max_monsters_per_room = 3
+    max_items_per_room = 2
     
     # Cores dos tiles
     colors = {
@@ -68,7 +69,7 @@ def main():
     
     # Inicialização do mapa
     game_map = GameMap(map_width, map_height) # Definindo o tamanho do mapa
-    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room) # Gerando o mapa em si
+    game_map.make_map(max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room, max_items_per_room) # Gerando o mapa em si
     
     # Inicialização do FOV
     fov_recompute = True # variavel para processamento de fov
