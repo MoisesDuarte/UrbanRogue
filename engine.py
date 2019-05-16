@@ -68,7 +68,7 @@ def main():
     
     # Definindo instâncias de console
     con = libtcod.console_new(screen_width, screen_height) # Painel do jogo
-    panel = libtcod.console_new(screen_height, screen_height) # Painel da interface
+    panel = libtcod.console_new(screen_width, panel_height) # Painel da interface
     
     # Inicialização do mapa
     game_map = GameMap(map_width, map_height) # Definindo o tamanho do mapa
