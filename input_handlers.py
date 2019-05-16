@@ -1,8 +1,22 @@
 import tcod as libtcod
 
-def handle_keys(key):
-    key_char = chr(key.c) # Retorna o caracter da tecla pressionada
+from game_states import GameStates
+
+# Checa em qual estado de jogo a tecla está sendo pressionada
+def handle_keys(key, game_state):
+    if game_state == GameStates.PLAYERS_TURN:
+        return handle_player_turn_keys(key)
+    elif game_state == GameStates.PLAYER_DEAD:
+        return handle_player_dead_keys(key)
+    elif game_state == GameStates.SHOW_INVENTORY:
+        return handle_inventory_keys(key)
     
+    return {}
+
+# PLAYERS_TURN
+def handle_player_turn_keys(key):
+    key_char = chr(key.c) # Retorna o caracter da tecla pressionada  
+
     # Movimento Cardinal
     if key.vk == libtcod.KEY_UP or key_char == 'k':
         return {'move': (0, -1)} # Retornando valor com x/y axis dicionario 'move' para não confundir com outros possiveis uso da tecla
@@ -27,15 +41,48 @@ def handle_keys(key):
         return {'pickup': True}
     elif key_char == 'i':
         return {'show_inventory': True}
-   
     
-    # Tecla fullscreen
-    if key.vk == libtcod.KEY_ENTER and key.lalt:
+    # Janela
+    if key.vk == libtcod.KEY_ENTER and key.lalt: # Tecla fullscreen
         # Alt+Enter : Modo fullscreen
         return {'fullscreen': True}
+    elif key.vk == libtcod.KEY_ESCAPE: # Tecla sair
+        # ESC = Sai do jogo
+        return {'exit': True}
     
-    # Tecla sair
-    elif key.vk == libtcod.KEY_ESCAPE:
+    # Nenhuma tecla pressionada
+    return {} # Como a engine irá esperar um dicionário, é preciso sempre retornar algo, mesmo que nada aconteça
+
+# PLAYER_DEAD   
+def handle_player_dead_keys(key):
+    key_char = chr(key.c)
+    
+    # Inventário
+    if key_char == 'i':
+        return {'show_inventory': True}
+    
+    # Janela
+    if key.vk == libtcod.KEY_ENTER and key.lalt: # Tecla fullscreen
+        # Alt+Enter : Modo fullscreen
+        return {'fullscreen': True}
+    elif key.vk == libtcod.KEY_ESCAPE: # Tecla sair
+        # ESC = Sai do jogo
+        return {'exit': True}
+    
+    return {}
+
+# SHOW_INVENTORY
+def handle_inventory_keys(key):
+    index = key.c - ord('a')
+    
+    if index >= 0:
+        return {'inventory_index': index}
+    
+    # Janela
+    if key.vk == libtcod.KEY_ENTER and key.lalt: # Tecla fullscreen
+        # Alt+Enter : Modo fullscreen
+        return {'fullscreen': True}
+    elif key.vk == libtcod.KEY_ESCAPE: # Tecla sair
         # ESC = Sai do jogo
         return {'exit': True}
     

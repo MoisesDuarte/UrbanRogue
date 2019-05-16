@@ -106,12 +106,13 @@ def main():
         clear_all(con, entities) # Chamando função clear_all de render_functions para limpar rastro de personagem
         
         # Input do teclado
-        action = handle_keys(key)
+        action = handle_keys(key, game_state)
         
         # Capturando retorno em action e seu conteúdo
         move = action.get('move') 
         pickup = action.get('pickup')
         show_inventory = action.get('show_inventory')
+        inventory_index = action.get('inventory_index')
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
@@ -154,6 +155,11 @@ def main():
         if show_inventory:
             previous_game_state = game_state
             game_state = GameStates.SHOW_INVENTORY
+            
+        # Processando a chamada de index de itens do menu
+        if inventory_index is not None and previous_game_state != GameStates.PLAYER_DEAD and inventory_index < len(player.inventory.items):
+            item = player.inventory.items[inventory_index]
+            print(item)
         
         if exit:
             # Verifica se inventário está aberto, para não fechar o jogo ao apertar esc no menu
