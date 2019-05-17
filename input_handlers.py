@@ -12,7 +12,6 @@ def handle_keys(key, game_state):
         return handle_targeting_keys(key)
     elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
         return handle_inventory_keys(key)
-    
     return {}
 
 # Checagem para cliques do mouse, devolver coordenadas
@@ -26,10 +25,8 @@ def handle_mouse(mouse):
 
     return {}
 
-# PLAYERS_TURN
 def handle_player_turn_keys(key):
     key_char = chr(key.c) # Retorna o caracter da tecla pressionada  
-
     # Movimento Cardinal
     if key.vk == libtcod.KEY_UP or key_char == 'k':
         return {'move': (0, -1)} # Retornando valor com x/y axis dicionario 'move' para não confundir com outros possiveis uso da tecla
@@ -65,17 +62,14 @@ def handle_player_turn_keys(key):
         # ESC = Sai do jogo
         return {'exit': True}
     
-    # Nenhuma tecla pressionada
     return {} # Como a engine irá esperar um dicionário, é preciso sempre retornar algo, mesmo que nada aconteça
 
-# TARGETING
 def handle_targeting_keys(key):
     if key.vk == libtcod.KEY_ESCAPE:
         return {'exit': True}
     
     return {}
-
-# PLAYER_DEAD   
+ 
 def handle_player_dead_keys(key):
     key_char = chr(key.c)
     
@@ -93,7 +87,6 @@ def handle_player_dead_keys(key):
     
     return {}
 
-# SHOW_INVENTORY
 def handle_inventory_keys(key):
     index = key.c - ord('a')
     
@@ -110,3 +103,15 @@ def handle_inventory_keys(key):
     
     # Nenhuma tecla pressionada
     return {} # Como a engine irá esperar um dicionário, é preciso sempre retornar algo, mesmo que nada aconteça
+
+def handle_main_menu(key):
+    key_char = chr(key.c)
+    
+    if key_char == 'a':
+        return {'new_game': True}
+    elif key_char == 'b':
+        return {'load_game': True}
+    elif key_char == 'c' or key.vk == libtcod.KEY_ESCAPE:
+        return {'exit': True}
+    
+    return {}

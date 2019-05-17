@@ -5,10 +5,13 @@ from entity import get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
 from game_messages import Message
 from game_states import GameStates
-from input_handlers import handle_keys, handle_mouse
+from input_handlers import handle_keys, handle_mouse, handle_main_menu
 from loader_functions.initialize_new_game import get_constants, get_game_variables
-from render_functions import clear_all, render_all
+from loader_functions.data_loaders import load_game, save_game
+from menus import main_menu, message_box
+from render_functions import clear_all, render_all  
 
+# INICIALIZAÇÃO DO JOGO
 def main():
     constants = get_constants() # Variaveis fixas do jogo
     
@@ -22,9 +25,70 @@ def main():
     con = libtcod.console_new(constants['screen_width'], constants['screen_height']) # Painel do jogo
     panel = libtcod.console_new(constants['screen_width'], constants['panel_height']) # Painel da interface
     
-    player, entities, game_map, message_log, game_state = get_game_variables(constants) # Variaveis dinamicas do jogo
+    # Declarando variaveis de jogo com valor vazio
+    player = None
+    entities = []
+    game_map = None
+    message_log = None
+    game_state = None
     
-    # Inicialização do FOV
+    # Variaveis para controle de menu principal
+    show_main_menu = True
+    show_load_error_message = False
+    
+    # Fundo do menu
+    main_menu_background_image = libtcod.image_load('menu_background.png')
+
+    # Controle de inputs
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
+    
+    while not libtcod.console_is_window_closed():
+        libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse)
+        
+        if show_main_menu: # Mostra o menu principal
+            main_menu(con, main_menu_background_image, 
+                      constants['screen_width'], constants['screen_height'])
+        
+            # Não há arquivo de save
+            if show_load_error_message:
+                message_box(con, 'Não há nenhum save para carregar', 50,
+                            constants['screen_width'], constants['screen_height'])
+                
+            libtcod.console_flush() # Atualiza o display
+            
+            # Navegação
+            action = handle_main_menu(key)
+            
+            new_game = action.get('new_game')
+            load_saved_game = action.get('load_game')
+            exit_game = action.get('exit')
+            
+            # Opções
+            if show_load_error_message and (new_game or load_saved_game or exit_game): # Volta para o menu caso aparecer mensagem de erro
+                show_load_error_message = False
+            elif new_game:
+                player, entities, game_map, message_log, game_state = get_game_variables(constants)     
+                game_state = GameStates.PLAYERS_TURN
+                show_main_menu = False   
+            elif load_saved_game:
+                try: # Checa se o save existe
+                    player, entities, game_map, message_log, game_state = load_game()
+                    show_main_menu = False
+                except FileNotFoundError:
+                    show_load_error_message = True
+            elif exit_game:
+                break
+        else: # Inicia o jogo
+            libtcod.console_clear(con)
+            play_game(player, entities, game_map, message_log, game_state, con, panel, constants)
+            
+            show_main_menu = True
+        
+    
+
+# JOGAR O JOGO EM SI
+def play_game(player, entities, game_map, message_log, game_state, con, panel, constants):
     fov_recompute = True # variavel para processamento de fov
     fov_map = initialize_fov(game_map)
     
@@ -36,7 +100,6 @@ def main():
     
     targeting_item = None # Guarda o item que foi selecionado para o targeting atual
     
-    # Loop do jogo
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse) # Captura eventos de input, atualizando os dados de key e mouse
         
@@ -143,6 +206,8 @@ def main():
             elif game_state == GameStates.TARGETING:
                 player_turn_results.append({'targeting_cancelled': True})
             else:
+                save_game(player, entities, game_map, message_log, game_state) # Salvar jogo ao sair
+                
                 return True
         
         if fullscreen:
@@ -230,7 +295,8 @@ def main():
                         break
             else:    
                 game_state = GameStates.PLAYERS_TURN # Volta para o turno do jogador
-        
+       
+    
     
 # A função main apenas será executada quando o script for executado com o comando 'python engine.py'
 if __name__ == '__main__':

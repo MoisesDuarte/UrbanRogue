@@ -39,3 +39,24 @@ def inventory_menu(con, header, inventory, inventory_width, screen_width, screen
         options = [item.name for item in inventory.items]
         
     menu(con, header, options, inventory_width, screen_width, screen_height)
+    
+# Função para gerar menu inicial
+def main_menu(con, background_image, screen_width, screen_height):
+    # Imagem de fundo
+    libtcod.image_blit_2x(background_image, 0, 0, 0)
+    
+    # Titulo
+    libtcod.console_set_default_foreground(0, libtcod.light_yellow)
+    libtcod.console_print_ex(0, int(screen_width / 2), int(screen_height / 2) - 4, libtcod.BKGND_NONE, libtcod.CENTER,
+                             'URBAN ROGUE')
+    
+    # Subtitulo
+    libtcod.console_print_ex(0, int(screen_width / 2), int(screen_height - 2) - 4, libtcod.BKGND_NONE, libtcod.CENTER, 
+                             'Por MDuarte')
+    
+    # Opções
+    menu(con, '', ['Novo jogo', 'Carregar jogo', 'Sair'], 24, screen_width, screen_height)
+    
+# Menu vazio para mostrar mensagens
+def message_box(con, header, width, screen_width, screen_height):
+    menu(con, header, [], width, screen_width, screen_height)
