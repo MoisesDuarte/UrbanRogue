@@ -1,5 +1,7 @@
 import tcod as libtcod
 
+from components.ai import ConfusedMonster
+
 from game_messages import Message
 
 # Funções para diferentes tipos de itens
@@ -72,4 +74,33 @@ def cast_fireball(*args, **kwargs):
             results.append({'message': Message('{0} queima {1} hit points'.format(entity.name, damage), libtcod.orange)})
             results.extend(entity.fighter.take_damage(damage))
             
+    return results
+
+# Função para scroll de confusao
+def cast_confuse(*args, **kwargs):
+    entities = kwargs.get('entities')
+    fov_map = kwargs.get('fov_map')
+    target_x = kwargs.get('target_x')
+    target_y = kwargs.get('target_y')
+    
+    results = []
+    
+    # Checa se o tile está fora da fov
+    if not libtcod.map_is_in_fov(fov_map, target_x, target_y):
+        results.append({'consumed': False, 'message': Message('Voce nao pode mirar em um tile fora de sua visão.', libtcod.yellow)})
+        return results
+    
+    for entity in entities:
+        if entity.x == target_x and entity.y == target_y and entity.ai:
+            confused_ai = ConfusedMonster(entity.ai, 10)
+            
+            confused_ai.owner = entity
+            entity.ai = confused_ai
+            
+            results.append({'consumed': True, 'message': Message('{0} se sente confuso, fora de si!'.format(entity.name), libtcod.light_green)})
+            
+            break
+    else:
+        results.append({'consumed': False, 'message': Message('Não há ninguem nesse tile.', libtcod.yellow)})
+        
     return results
