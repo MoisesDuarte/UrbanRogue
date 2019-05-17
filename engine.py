@@ -9,12 +9,12 @@ from fov_functions import initialize_fov, recompute_fov
 from game_messages import Message, MessageLog
 from game_states import GameStates
 from input_handlers import handle_keys, handle_mouse
-from loader_functions.initialize_new_game import get_gamevariables
+from loader_functions.initialize_new_game import get_constants
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all, RenderOrder
 
 def main():
-    gamevariables = get_gamevariables() # Carrega todas as variaveis fixas do jogo
+    constants = get_constants() # Carrega todas as variaveis fixas do jogo
     
     # Atributos do jogador
     fighter_component = Fighter(hp=30, defense=2, power=5) 
@@ -26,24 +26,24 @@ def main():
     libtcod.console_set_custom_font('terminus10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
     
     # Iniciando a tela com dimensões da tela, título e um valor boolean false para iniciar minimizado
-    libtcod.console_init_root(gamevariables['screen_width'], gamevariables['screen_height'], gamevariables['window_title'], False)
+    libtcod.console_init_root(constants['screen_width'], constants['screen_height'], constants['window_title'], False)
     
     # Definindo instâncias de console
-    con = libtcod.console_new(gamevariables['screen_width'], gamevariables['screen_height']) # Painel do jogo
-    panel = libtcod.console_new(gamevariables['screen_width'], gamevariables['panel_height']) # Painel da interface
+    con = libtcod.console_new(constants['screen_width'], constants['screen_height']) # Painel do jogo
+    panel = libtcod.console_new(constants['screen_width'], constants['panel_height']) # Painel da interface
     
     # Inicialização do mapa
-    game_map = GameMap(gamevariables['map_width'], gamevariables['map_height'])
-    game_map.make_map(gamevariables['max_rooms'], gamevariables['room_min_size'], gamevariables['room_max_size'],
-                      gamevariables['map_width'], gamevariables['map_height'], player, entities,
-                      gamevariables['max_monsters_per_room'], gamevariables['max_items_per_room'])
+    game_map = GameMap(constants['map_width'], constants['map_height'])
+    game_map.make_map(constants['max_rooms'], constants['room_min_size'], constants['room_max_size'],
+                      constants['map_width'], constants['map_height'], player, entities,
+                      constants['max_monsters_per_room'], constants['max_items_per_room'])
     
     # Inicialização do FOV
     fov_recompute = True # variavel para processamento de fov
     fov_map = initialize_fov(game_map)
     
     # Inicialização do log
-    message_log = MessageLog(gamevariables['message_x'], gamevariables['message_width'], gamevariables['message_height'])
+    message_log = MessageLog(constants['message_x'], constants['message_width'], constants['message_height'])
     
     # Guardando inputs do jogador
     key = libtcod.Key() # Guarda input do teclado em key
@@ -62,11 +62,11 @@ def main():
         # Chamada do metodo recompute_fov se fov_recompute = True
         if fov_recompute:
             recompute_fov(fov_map, player.x, player.y, 
-                          gamevariables['fov_radius'], gamevariables['fov_light_walls'], gamevariables['fov_algorithm'])
+                          constants['fov_radius'], constants['fov_light_walls'], constants['fov_algorithm'])
         
         render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, message_log,
-                   gamevariables['screen_width'], gamevariables['screen_height'], gamevariables['bar_width'],
-                   gamevariables['panel_height'], gamevariables['panel_y'], mouse, gamevariables['colors'], game_state)
+                   constants['screen_width'], constants['screen_height'], constants['bar_width'],
+                   constants['panel_height'], constants['panel_y'], mouse, constants['colors'], game_state)
         
         fov_recompute = False
         

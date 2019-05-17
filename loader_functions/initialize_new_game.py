@@ -1,7 +1,7 @@
 import tcod as libtcod
 
 # Pega todas as variaveis fixas referentes ao jogo
-def get_gamevariables():
+def get_constants():
     window_title = 'Urban Rogue'
     
     # Dimensões da Tela
@@ -45,7 +45,7 @@ def get_gamevariables():
     }
     
     # Guarda todas as variaveis em um array constants, que não deve mudar
-    gamevariables = {
+    constants = {
         'window_title': window_title,
         'screen_width': screen_width,
         'screen_height': screen_height,
@@ -68,4 +68,5 @@ def get_gamevariables():
         'colors': colors
     }
     
-    return gamevariables
+    return constants
+
