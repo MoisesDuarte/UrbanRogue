@@ -1,6 +1,12 @@
 # UrbanRogue
 Um roguelike básico programado em Python 3.7 com biblioteca Libtcod
 
+- Controle:
+  - setas direcionais: mover o personagem 
+  - y, u, b, n : mover o personagem na diagonal
+  - g : coleta item
+  - i : abre inventário
+
 ## Instalação e Configuração Inicial
 ### 1 - Instalar Python 3.7 ou maior
 > https://www.python.org/downloads/
