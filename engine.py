@@ -44,7 +44,7 @@ def main():
     
     # Atributos para geração de entidades
     max_monsters_per_room = 3
-    max_items_per_room = 2
+    max_items_per_room = 5
     
     # Cores dos tiles
     colors = {
@@ -170,7 +170,7 @@ def main():
             item = player.inventory.items[inventory_index]
             # Checa se é uso ou descarte de item
             if game_state == GameStates.SHOW_INVENTORY:
-                player_turn_results.extend(player.inventory.use(item)) # 'Concatena' o resultado do uso do item ao result apresentado no log a cada turno
+                player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map)) # 'Concatena' o resultado do uso do item ao result apresentado no log a cada turno
             elif game_state == GameStates.DROP_INVENTORY:
                 player_turn_results.extend(player.inventory.drop_item(item))                                      
         
