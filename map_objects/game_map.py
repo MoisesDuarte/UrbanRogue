@@ -9,7 +9,9 @@ from components.item import Item
 
 from entity import Entity
 
-from item_functions import cast_lightning, heal
+from game_messages import Message
+
+from item_functions import cast_fireball, cast_lightning, heal
 
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
@@ -141,6 +143,9 @@ class GameMap:
                 if item_chance < 70:     
                     item_component = Item(use_function=heal, amount=4) # Define o item como um item de cura +4 hp
                     item = Entity(x, y, '!', libtcod.violet, 'Frasco de Cura', render_order=RenderOrder.ITEM, item=item_component)
+                elif item_chance < 85:
+                    item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message('Clique esquerdo em um tile para bola de fogo, ou click-direito para cancelar.', libtcod.light_cyan), damage=12, radius=3)
+                    item = Entity(x, y, '#', libtcod.red, 'Scroll de Bola de Fogo', render_order=RenderOrder.ITEM, item=item_component)
                 else:
                     item_component = Item(use_function=cast_lightning, damage=20, maximum_range=5) # Define o item como uma scroll de relampago, dano 20, range 5
                     item = Entity(x, y, '#', libtcod.yellow, 'Scroll de Relampago', render_order=RenderOrder.ITEM, item=item_component)

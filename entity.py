@@ -89,7 +89,11 @@ class Entity:
         # Deleta o caminho para liberar memória
         libtcod.path_delete(my_path)
     
-    # Devolve a distancia entre duas coordenadas
+    # Distancia entre entidade e um ponto arbitrario
+    def distance(self, x, y):
+        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+    
+    # Devolve a distancia entre duas entidades
     def distance_to(self, other):
         dx = other.x - self.x
         dy = other.y - self.y

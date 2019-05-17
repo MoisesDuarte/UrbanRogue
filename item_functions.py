@@ -47,3 +47,29 @@ def cast_lightning(*args, **kwargs):
         results.extend(target.fighter.take_damage(damage))
         
     return results
+
+# Função para scroll de bola de fogo
+def cast_fireball(*args, **kwargs):
+    entities = kwargs.get('entities')
+    fov_map = kwargs.get('fov_map')
+    damage = kwargs.get('damage')
+    radius = kwargs.get('radius')
+    target_x = kwargs.get('target_x')
+    target_y = kwargs.get('target_y')
+    
+    results = []
+    
+    # Checa se o tile está fora da fov
+    if not libtcod.map_is_in_fov(fov_map, target_x, target_y):
+        results.append({'consumed': False, 'message': Message('Voce nao pode mirar em um tile fora de sua visão.', libtcod.yellow)})
+        return results
+    
+    # Mensagem para notificar de radius do spell
+    results.append({'consumed': True, 'message': Message('A bola de fogo explode, queimando tudo dentro de {0} tiles!'.format(radius), libtcod.orange)})
+    
+    for entity in entities:
+        if entity.distance(target_x, target_y) <= radius and entity.fighter: # Se a distancia das coordenadas da entidade forem menores que o radius do spell e se a entidade for uma 'fighter' (inimigo)
+            results.append({'message': Message('{0} queima {1} hit points'.format(entity.name, damage), libtcod.orange)})
+            results.extend(entity.fighter.take_damage(damage))
+            
+    return results

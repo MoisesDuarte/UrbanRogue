@@ -8,7 +8,7 @@ from entity import Entity, get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
 from game_messages import Message, MessageLog
 from game_states import GameStates
-from input_handlers import handle_keys
+from input_handlers import handle_keys, handle_mouse
 from map_objects.game_map import GameMap
 from render_functions import clear_all, render_all, RenderOrder
 
@@ -89,6 +89,8 @@ def main():
     game_state = GameStates.PLAYERS_TURN # Inicia estado de jogo como turno do jogador
     previous_game_state = game_state # Guarda o estado anterior ao turno atual
     
+    targeting_item = None # Guarda o item que foi selecionado para o targeting atual
+    
     # Loop do jogo
     while not libtcod.console_is_window_closed():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS | libtcod.EVENT_MOUSE, key, mouse) # Captura eventos de input, atualizando os dados de key e mouse
@@ -105,19 +107,20 @@ def main():
         
         clear_all(con, entities) # Chamando função clear_all de render_functions para limpar rastro de personagem
         
-        # Input do teclado
+        # Actions do teclado e mouse
         action = handle_keys(key, game_state)
+        mouse_action = handle_mouse(mouse)
         
-        move = action.get('move') # Capturando retorno de action e guardando o valor de move
-        
-        pickup = action.get('pickup')
-        
+        move = action.get('move') # Capturando retorno de action e guardando o valor de move 
+        pickup = action.get('pickup')  
         show_inventory = action.get('show_inventory')
-        drop_inventory = action.get('drop_inventory')
         inventory_index = action.get('inventory_index')
-        
+        drop_inventory = action.get('drop_inventory')
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
+        
+        left_click = mouse_action.get('left_click')
+        right_click = mouse_action.get('right_click')
         
         player_turn_results = [] # lista para resultados de embates e ações em turno
         
@@ -174,10 +177,23 @@ def main():
             elif game_state == GameStates.DROP_INVENTORY:
                 player_turn_results.extend(player.inventory.drop_item(item))                                      
         
+        # Processando a mira de um spell
+        if game_state == GameStates.TARGETING:
+            if left_click: # Confirma o alvo
+                target_x, target_y = left_click
+
+                item_use_results = player.inventory.use(targeting_item, entities=entities, fov_map=fov_map, target_x=target_x, target_y=target_y)
+                player_turn_results.extend(item_use_results)
+            elif right_click: # Cancela o alvo
+                player_turn_results.append({'targeting_cancelled': True})
+        
         if exit:
             # Verifica se inventário está aberto, para não fechar o jogo ao apertar esc no menu
             if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
                 game_state = previous_game_state
+            # Verifica se o jogador está mirando, esc cancela o alvo
+            elif game_state == GameStates.TARGETING:
+                player_turn_results.append({'targeting_cancelled': True})
             else:
                 return True
         
@@ -191,9 +207,16 @@ def main():
             item_added = player_turn_result.get('item_added')
             item_consumed = player_turn_result.get('consumed')
             item_dropped = player_turn_result.get('item_dropped')
+            targeting = player_turn_result.get('targeting')
+            targeting_cancelled = player_turn_result.get('targeting_cancelled')
             
             if message:
                 message_log.add_message(message)
+                
+            # Cancelamento de alvo
+            if targeting_cancelled:
+                game_state = previous_game_state
+                message_log.add_message(Message('Alvo Cancelado'))
             
             # Morte de entidades
             if dead_entity:
@@ -213,6 +236,15 @@ def main():
             # Uso de item
             if item_consumed:
                 game_state = GameStates.ENEMY_TURN
+                
+            # Mirando item
+            if targeting:
+                previous_game_state = GameStates.PLAYERS_TURN
+                game_state = GameStates.TARGETING
+                
+                targeting_item = targeting
+                
+                message_log.add_message(targeting_item.item.targeting_message)
                 
             # Descarte de item
             if item_dropped:
