@@ -16,7 +16,7 @@ def main():
     constants = get_constants() # Variaveis fixas do jogo
     
     # Especificando arquivo de fonte a ser usada e o tipo de arquivo
-    libtcod.console_set_custom_font('terminus10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
+    libtcod.console_set_custom_font('cp437_10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_CP437)
     
     # Iniciando a tela com dimensões da tela, título e um valor boolean false para iniciar minimizado
     libtcod.console_init_root(constants['screen_width'], constants['screen_height'], constants['window_title'], False)
