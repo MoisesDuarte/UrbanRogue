@@ -1,26 +1,16 @@
 import tcod as libtcod
 
-from components.fighter import Fighter
-from components.inventory import Inventory
-
 from death_functions import kill_monster, kill_player
-from entity import Entity, get_blocking_entities_at_location
+from entity import get_blocking_entities_at_location
 from fov_functions import initialize_fov, recompute_fov
-from game_messages import Message, MessageLog
+from game_messages import Message
 from game_states import GameStates
 from input_handlers import handle_keys, handle_mouse
-from loader_functions.initialize_new_game import get_constants
-from map_objects.game_map import GameMap
-from render_functions import clear_all, render_all, RenderOrder
+from loader_functions.initialize_new_game import get_constants, get_game_variables
+from render_functions import clear_all, render_all
 
 def main():
-    constants = get_constants() # Carrega todas as variaveis fixas do jogo
-    
-    # Atributos do jogador
-    fighter_component = Fighter(hp=30, defense=2, power=5) 
-    inventory_component = Inventory(26)
-    player = Entity(0, 0, '@', libtcod.white, 'Player', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, inventory=inventory_component)
-    entities = [player]
+    constants = get_constants() # Variaveis fixas do jogo
     
     # Especificando arquivo de fonte a ser usada e o tipo de arquivo
     libtcod.console_set_custom_font('terminus10x10.png', libtcod.FONT_TYPE_GRAYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
@@ -32,26 +22,17 @@ def main():
     con = libtcod.console_new(constants['screen_width'], constants['screen_height']) # Painel do jogo
     panel = libtcod.console_new(constants['screen_width'], constants['panel_height']) # Painel da interface
     
-    # Inicialização do mapa
-    game_map = GameMap(constants['map_width'], constants['map_height'])
-    game_map.make_map(constants['max_rooms'], constants['room_min_size'], constants['room_max_size'],
-                      constants['map_width'], constants['map_height'], player, entities,
-                      constants['max_monsters_per_room'], constants['max_items_per_room'])
+    player, entities, game_map, message_log, game_state = get_game_variables(constants) # Variaveis dinamicas do jogo
     
     # Inicialização do FOV
     fov_recompute = True # variavel para processamento de fov
     fov_map = initialize_fov(game_map)
     
-    # Inicialização do log
-    message_log = MessageLog(constants['message_x'], constants['message_width'], constants['message_height'])
-    
     # Guardando inputs do jogador
-    key = libtcod.Key() # Guarda input do teclado em key
-    mouse = libtcod.Mouse() # Guarda input do mouse em mouse
+    key = libtcod.Key()
+    mouse = libtcod.Mouse()
     
-    # Estados de jogo
-    game_state = GameStates.PLAYERS_TURN # Inicia estado de jogo como turno do jogador
-    previous_game_state = game_state # Guarda o estado anterior ao turno atual
+    previous_game_state = game_state # Para guardar o estado anterior ao turno atual
     
     targeting_item = None # Guarda o item que foi selecionado para o targeting atual
     
