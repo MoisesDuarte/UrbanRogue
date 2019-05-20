@@ -64,6 +64,30 @@ def level_up_menu(con, header, player, menu_width, screen_width, screen_height):
                'Agilidade (+1 defesa, de {0})'.format(player.fighter.defense)]
     
     menu(con, header, options, menu_width, screen_width, screen_height)
+    
+# Tela de status do jogador
+def character_screen(player, character_screen_width, character_screen_height, screen_width, screen_height):
+    window = libtcod.console_new(character_screen_width, character_screen_height)
+    
+    libtcod.console_set_default_foreground(window, libtcod.white)
+    
+    libtcod.console_print_rect_ex(window, 0, 1, character_screen_width, character_screen_height, libtcod.BKGND_NONE,
+                                          libtcod.LEFT, 'Status do Personagem')
+    libtcod.console_print_rect_ex(window, 0, 2, character_screen_width, character_screen_height, libtcod.BKGND_NONE,
+                                          libtcod.LEFT, 'Nível: {0}'.format(player.level.current_level))
+    libtcod.console_print_rect_ex(window, 0, 3, character_screen_width, character_screen_height, libtcod.BKGND_NONE,
+                                          libtcod.LEFT, 'Experiência: {0} / {1}'.format(player.level.current_xp, player.level.experience_to_next_level))
+    
+    libtcod.console_print_rect_ex(window, 0, 5, character_screen_width, character_screen_height, libtcod.BKGND_NONE,
+                                          libtcod.LEFT, 'HP Máximo: {0}'.format(player.fighter.max_hp))
+    libtcod.console_print_rect_ex(window, 0, 6, character_screen_width, character_screen_height, libtcod.BKGND_NONE,
+                                          libtcod.LEFT, 'Ataque: {0}'.format(player.fighter.power))
+    libtcod.console_print_rect_ex(window, 0, 7, character_screen_width, character_screen_height, libtcod.BKGND_NONE,
+                                          libtcod.LEFT, 'Defesa: {0}'.format(player.fighter.defense))
+    
+    x = screen_width // 2 - character_screen_width // 2
+    y = screen_height // 2 - character_screen_height // 2
+    libtcod.console_blit(window, 0, 0, character_screen_width, character_screen_height, 0, x, y, 1.0, 0.7)
 
 # Menu vazio para mostrar mensagens
 def message_box(con, header, width, screen_width, screen_height):

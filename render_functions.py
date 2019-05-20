@@ -4,7 +4,7 @@ from enum import Enum
 
 from game_states import GameStates
 
-from menus import inventory_menu, level_up_menu
+from menus import character_screen, inventory_menu, level_up_menu
 
 # Define 'camadas' de renderização
 class RenderOrder(Enum):
@@ -86,6 +86,9 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
     # Checa se jogador sobe de nivel e chama tela de levelup
     elif game_state == GameStates.LEVEL_UP:
         level_up_menu(con, 'Level up! Escolha um atributo para aumentar:', player, 40, screen_width, screen_height)
+    # Checa chamada de tela de status
+    elif game_state == GameStates.CHARACTER_SCREEN:
+        character_screen(player, 30, 10, screen_width, screen_height)
     
     # Reseta um console para suas cores padrões com um caractere ' ' (espaço)
     libtcod.console_set_default_background(panel, libtcod.black)

@@ -14,6 +14,8 @@ def handle_keys(key, game_state):
         return handle_inventory_keys(key)
     elif game_state == GameStates.LEVEL_UP:
         return handle_level_up_menu(key)
+    elif game_state == GameStates.CHARACTER_SCREEN:
+        return handle_character_screen(key)
     return {}
 
 # Checagem para cliques do mouse, devolver coordenadas
@@ -59,6 +61,10 @@ def handle_player_turn_keys(key):
     # Escada
     elif key.vk == libtcod.KEY_ENTER:
         return {'take_stairs': True}
+    
+    # Status do personagem
+    elif key_char == 'c':
+        return {'show_character_screen': True}
     
     # Janela
     if key.vk == libtcod.KEY_ENTER and key.lalt: # Tecla fullscreen
@@ -110,6 +116,7 @@ def handle_inventory_keys(key):
     # Nenhuma tecla pressionada
     return {} # Como a engine irá esperar um dicionário, é preciso sempre retornar algo, mesmo que nada aconteça
 
+# Teclas em menus
 def handle_main_menu(key):
     key_char = chr(key.c)
     
@@ -134,4 +141,10 @@ def handle_level_up_menu(key):
         elif key_char == 'c':
             return {'level_up': 'def'}
         
+    return {}
+
+def handle_character_screen(key):
+    if key.vk == libtcod.KEY_ESCAPE:
+        return {'exit': True}
+    
     return {}

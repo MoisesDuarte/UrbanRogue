@@ -129,6 +129,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
         drop_inventory = action.get('drop_inventory')
         take_stairs = action.get('take_stairs')
         level_up = action.get('level_up')
+        show_character_screen = action.get('show_character_screen')
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
@@ -215,6 +216,11 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
                 
             game_state = previous_game_state              
         
+        # Processando chamada de tela de estado do personagem
+        if show_character_screen:
+            previous_game_state = game_state
+            game_state = GameStates.CHARACTER_SCREEN
+        
         # Processando a mira de um spell
         if game_state == GameStates.TARGETING:
             if left_click: # Confirma o alvo
@@ -227,7 +233,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
         
         if exit:
             # Verifica se inventário está aberto, para não fechar o jogo ao apertar esc no menu
-            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
+            if game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY, GameStates.CHARACTER_SCREEN):
                 game_state = previous_game_state
             # Verifica se o jogador está mirando, esc cancela o alvo
             elif game_state == GameStates.TARGETING:
