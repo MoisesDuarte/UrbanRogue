@@ -122,7 +122,9 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
         action = handle_keys(key, game_state)
         mouse_action = handle_mouse(mouse)
         
-        move = action.get('move') # Capturando retorno de action e guardando o valor de move 
+        # Capturando retorno de action e guardando resposta em variavel
+        move = action.get('move') 
+        wait = action.get('wait')
         pickup = action.get('pickup')  
         show_inventory = action.get('show_inventory')
         inventory_index = action.get('inventory_index')
@@ -158,6 +160,10 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
                     fov_recompute = True # Recalcula FOV a cada passo do jogador
                     
                 game_state = GameStates.ENEMY_TURN # Inicia o turno do inimigo após movimento do jogador
+                
+        # Jogador espera um turno
+        elif wait:
+            game_state = GameStates.ENEMY_TURN
         
         # Processando o pickup de items        
         elif pickup and game_state == GameStates.PLAYERS_TURN:

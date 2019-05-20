@@ -48,7 +48,10 @@ def handle_player_turn_keys(key):
     elif key_char == 'b':
         return {'move': (-1, 1)}
     elif key_char == 'n':
-        return {'move': (1, s1)}
+        return {'move': (1, 1)}
+    # Espera de turno
+    elif key_char == 'z':
+        return {'wait': True}
     
     # Inventário
     if key_char == 'g':
