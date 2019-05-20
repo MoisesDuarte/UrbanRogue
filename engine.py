@@ -127,6 +127,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
         show_inventory = action.get('show_inventory')
         inventory_index = action.get('inventory_index')
         drop_inventory = action.get('drop_inventory')
+        take_stairs = action.get('take_stairs')
         exit = action.get('exit') 
         fullscreen = action.get('fullscreen')   
         
@@ -186,7 +187,20 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
             if game_state == GameStates.SHOW_INVENTORY:
                 player_turn_results.extend(player.inventory.use(item, entities=entities, fov_map=fov_map)) # 'Concatena' o resultado do uso do item ao result apresentado no log a cada turno
             elif game_state == GameStates.DROP_INVENTORY:
-                player_turn_results.extend(player.inventory.drop_item(item))                                      
+                player_turn_results.extend(player.inventory.drop_item(item))    
+                
+        # Processando o uso da escada
+        if take_stairs and game_state == GameStates.PLAYERS_TURN:
+            for entity in entities:
+                if entity.stairs and entity.x == player.x and entity.y == player.y:
+                    entities = game_map.next_floor(player, message_log, constants)
+                    fov_map = initialize_fov(game_map)
+                    fov_recompute = True
+                    libtcod.console_clear(con) 
+                    
+                    break             
+            else:
+                message_log.add_message(Message("Não há escada alguma aqui.", libtcod.yellow))               
         
         # Processando a mira de um spell
         if game_state == GameStates.TARGETING:

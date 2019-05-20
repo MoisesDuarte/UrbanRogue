@@ -54,6 +54,10 @@ def handle_player_turn_keys(key):
     elif key_char == 'd':
         return {'drop_inventory': True}
     
+    # Escada
+    elif key.vk == libtcod.KEY_ENTER:
+        return {'take_stairs': True}
+    
     # Janela
     if key.vk == libtcod.KEY_ENTER and key.lalt: # Tecla fullscreen
         # Alt+Enter : Modo fullscreen

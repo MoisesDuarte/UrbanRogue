@@ -6,6 +6,7 @@ from render_functions import RenderOrder
 from components.ai import BasicMonster
 from components.fighter import Fighter
 from components.item import Item
+from components.stairs import Stairs
 
 from entity import Entity
 
@@ -19,10 +20,12 @@ from map_objects.tile import Tile
 class GameMap:
     # Uma classe para inicialização de mapa
     
-    def __init__(self, width, height):
+    def __init__(self, width, height, dungeon_level=1):
         self.width = width # Largura do mapa
         self.height = height # Altura do mapa
-        self.tiles = self.initialize_tiles() # Array de tiles do mapa
+        self.tiles = self.initialize_tiles() # Array de tiles do map
+        
+        self.dungeon_level = dungeon_level # 'Profundidade' do jogador na dungeon
         
     # Inicialização de um array de mapas
     def initialize_tiles(self):
@@ -35,6 +38,10 @@ class GameMap:
     def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room, max_items_per_room):
         rooms = [] # Lista das salas geradas
         num_rooms = 0 # Guarda número de salas no mapa
+        
+        # Ponto central da última sala para colocar escada
+        center_of_last_room_x = None
+        center_of_last_room_y = None
         
         # Randomizando o tamanho das salas
         for r in range(max_rooms):
@@ -59,6 +66,9 @@ class GameMap:
                 
                 # Centraliza as coordenadas x e y da sala
                 (new_x, new_y) = new_room.center()
+                
+                center_of_last_room_x = new_x
+                center_of_last_room_y = new_y
                 
                 # Checagem de sala inicial
                 if num_rooms == 0:
@@ -86,7 +96,11 @@ class GameMap:
                         
                 rooms.append(new_room)
                 num_rooms += 1
-                    
+                
+        # Processamento da entidade escada
+        stairs_component = Stairs(self.dungeon_level + 1) # Sobe o jogador um nivel
+        down_stairs = Entity(center_of_last_room_x, center_of_last_room_y, '>', libtcod.white, 'Stairs', render_order=RenderOrder.STAIRS, stairs=stairs_component)
+        entities.append(down_stairs)     
                 
     
     # Gerador de salas
@@ -163,3 +177,21 @@ class GameMap:
 
         return False
  
+ 
+    # Gera o proximo mapa
+    def next_floor(self, player, message_log, constants):
+        self.dungeon_level += 1
+        entities = [player] # Cria uma nova lista de entidades
+        
+        # Gera as tiles do novo piso
+        self.tiles = self.initialize_tiles()
+        self.make_map(constants['max_rooms'], constants['room_min_size'], constants['room_max_size'],
+                    constants['map_width'], constants['map_height'], player, entities,
+                    constants['max_monsters_per_room'], constants['max_items_per_room'])
+        
+        # Metade do hp de volta
+        player.fighter.heal(player.fighter.max_hp // 2)
+        
+        message_log.add_message(Message('Você descansa um pouco, recuperando suas forças.', libtcod.light_violet))
+        
+        return entities

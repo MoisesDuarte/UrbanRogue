@@ -8,9 +8,10 @@ from menus import inventory_menu
 
 # Define 'camadas' de renderização
 class RenderOrder(Enum):
-    CORPSE = 1
-    ITEM = 2
-    ACTOR = 3
+    STAIRS = 1
+    CORPSE = 2
+    ITEM = 3
+    ACTOR = 4
 
 # Escreve nome de entidades acima da barra de hp com mouseover 
 def get_names_under_mouse(mouse, entities, fov_map):
@@ -68,7 +69,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
             
     # Desenha todas as entidades da lista entities com draw_entity   
     for entity in entities_in_render_order:
-        draw_entity(con, entity, fov_map) 
+        draw_entity(con, entity, fov_map, game_map) 
           
     libtcod.console_blit(con, 0, 0, screen_width, screen_height, 0, 0, 0) # 'Desenha' o console definido em con
     
@@ -93,9 +94,11 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
         libtcod.console_print_ex(panel, message_log.x, y, libtcod.BKGND_NONE, libtcod.LEFT, message.text)
         y += 1
     
-    # Renderiza uma barra de hp
+    # Renderiza uma barra de hp e profundidae 
     render_bar(panel, 1, 1, bar_width, 'HP', player.fighter.hp, player.fighter.max_hp,
                libtcod.light_red, libtcod.darker_red)
+    libtcod.console_print_ex(panel, 1, 3, libtcod.BKGND_NONE, libtcod.LEFT,
+                             'Piso da masmorra: {0}'.format(game_map.dungeon_level))
     
     # Renderiza uma mensagem um nome acima da barra de hp no mouseover em uma entidade
     libtcod.console_set_default_foreground(panel, libtcod.light_gray)
@@ -109,8 +112,8 @@ def clear_all(con, entities):
         clear_entity(con, entity)
   
 # Desenha a entidade      
-def draw_entity(con, entity, fov_map):
-    if libtcod.map_is_in_fov(fov_map, entity.x, entity.y):
+def draw_entity(con, entity, fov_map, game_map):
+    if libtcod.map_is_in_fov(fov_map, entity.x, entity.y) or (entity.stairs and game_map.tiles[entity.x][entity.y].explored): # Checa se esta no fov ou se é uma escada
         libtcod.console_set_default_foreground(con, entity.color) # Definindo a cor da entidade
         libtcod.console_put_char(con, entity.x, entity.y, entity.char, libtcod.BKGND_NONE) # Desenhando no console as coordenadas x e y, com background vazio
     
