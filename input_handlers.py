@@ -12,6 +12,8 @@ def handle_keys(key, game_state):
         return handle_targeting_keys(key)
     elif game_state in (GameStates.SHOW_INVENTORY, GameStates.DROP_INVENTORY):
         return handle_inventory_keys(key)
+    elif game_state == GameStates.LEVEL_UP:
+        return handle_level_up_menu(key)
     return {}
 
 # Checagem para cliques do mouse, devolver coordenadas
@@ -118,4 +120,18 @@ def handle_main_menu(key):
     elif key_char == 'c' or key.vk == libtcod.KEY_ESCAPE:
         return {'exit': True}
     
+    return {}
+
+
+def handle_level_up_menu(key):
+    if key:
+        key_char = chr(key.c)
+        
+        if key_char == 'a':
+            return {'level_up': 'hp'}
+        elif key_char == 'b':
+            return {'level_up': 'str'}
+        elif key_char == 'c':
+            return {'level_up': 'def'}
+        
     return {}

@@ -57,6 +57,14 @@ def main_menu(con, background_image, screen_width, screen_height):
     # Opções
     menu(con, '', ['Novo jogo', 'Carregar jogo', 'Sair'], 24, screen_width, screen_height)
     
+# Menu de level-up com habilidades
+def level_up_menu(con, header, player, menu_width, screen_width, screen_height):
+    options = ['Musculatura (+20 HP, de {0})'.format(player.fighter.max_hp),
+               'Força (+1 ataque, de {0})'.format(player.fighter.power),
+               'Agilidade (+1 defesa, de {0})'.format(player.fighter.defense)]
+    
+    menu(con, header, options, menu_width, screen_width, screen_height)
+
 # Menu vazio para mostrar mensagens
 def message_box(con, header, width, screen_width, screen_height):
     menu(con, header, [], width, screen_width, screen_height)

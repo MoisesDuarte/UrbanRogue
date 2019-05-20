@@ -4,11 +4,12 @@ from  game_messages import Message
 
 # Classe que define se uma entidade é um objeto 'lutador' (Jogador ou inimigo)
 class Fighter:
-    def __init__(self, hp, defense, power):
+    def __init__(self, hp, defense, power, xp=0):
         self.max_hp = hp
         self.hp = hp
         self.defense = defense
         self.power = power
+        self.xp = xp
         
     # Função para processamento de dano
     def take_damage(self, amount):
@@ -18,7 +19,7 @@ class Fighter:
         
         # Entidade é morta
         if self.hp <= 0:
-            results.append({'dead': self.owner})
+            results.append({'dead': self.owner, 'xp': self.xp})
             
         return results
     
