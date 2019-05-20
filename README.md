@@ -6,6 +6,7 @@ Um roguelike básico programado em Python 3.7 com biblioteca Libtcod
   - y, u, b, n : mover o personagem na diagonal
   - g : coleta item
   - i : abre inventário
+  - c : Mostra status do personagem
 
 ## Instalação e Configuração Inicial
 ### 1 - Instalar Python 3.7 ou maior
