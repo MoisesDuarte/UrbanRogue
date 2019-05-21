@@ -34,9 +34,15 @@ class Inventory:
         
         item_component = item_entity.item
         
-        # Checa se item é 'usavel' em inventário
+        # Checa se item é não é 'usavel' em inventário (ex: equipamento, itens de quest)
         if item_component.use_function is None:
-            results.append({'message': Message('{0} não pode ser usado'.format(item_entity.name), libtcod.yellow)})
+            equippable_component = item_entity.equippable
+            
+            # Então, se esse item for equipavel, marca como equipado. Caso não, apenas mensagem
+            if equippable_component:
+                results.append({'equip': item_entity})
+            else:
+                results.append({'message': Message('{0} não pode ser usado'.format(item_entity.name), libtcod.yellow)})
         else:
             # Checa se item necessita de um target, para não usa-lo antes e se já não ha um x e y recebido, para definir que alvo ainda não foi selecionado
             if item_component.targeting and not (kwargs.get('target_x') or kwargs.get('target_y')): 
@@ -61,6 +67,10 @@ class Inventory:
     # Função para descartar item do inventario e colocar ela aos pés do jogador (nas coordenadas)
     def drop_item(self, item):
         results = []
+        
+        # Se item jogado for equipavel, 'desequipa' antes de jogar
+        if self.owner.equipment.main_hand == item or self.owner.equipment.off_hand == item:
+            self.owner.equipment.toggle_equip(item)
         
         # Define coordenadas do item como mesmas coordenadas do jogador
         item.x = self.owner.x

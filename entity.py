@@ -1,11 +1,14 @@
 import tcod as libtcod
+
 import math
+
+from components.item import Item
 
 from render_functions import RenderOrder
 
 class Entity:
     # Um objeto genérico para representar jogadores, inimigos, itens, etc
-    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None, item=None, inventory=None, stairs=None, level=None):
+    def __init__(self, x, y, char, color, name, blocks=False, render_order=RenderOrder.CORPSE, fighter=None, ai=None, item=None, inventory=None, stairs=None, level=None, equipment=None, equippable=None):
         self.x = x
         self.y = y
         self.char = char
@@ -19,6 +22,8 @@ class Entity:
         self.inventory = inventory
         self.stairs = stairs
         self.level = level
+        self.equipment = equipment
+        self.equippable = equippable
         
         # Para acessar a classe por meio da entidade referente (ex: monster.name)
         if self.fighter:
@@ -38,6 +43,18 @@ class Entity:
             
         if self.level:
             self.level.owner = self
+        
+        if self.equipment:
+            self.equipment.owner = self
+        
+        if self.equippable:
+            self.equippable.owner = self
+            
+            # Se entidade não tiver um componente item, adicionamos um a ela (para drop, pickup, etc)
+            if not self.item:
+                item = Item()
+                self.item = item
+                self.item.owner = self
         
     def move(self, dx, dy):
         # Move a entidade em determinado incremento

@@ -81,7 +81,7 @@ def render_all(con, panel, entities, player, game_map, fov_map, fov_recompute, m
         else:
             inventory_title = 'Aperte a tecla ao lado de um item para descartar, ou Esc para cancelar.\n'
             
-        inventory_menu(con, inventory_title, player.inventory, 50, screen_width, screen_height) # Chama o menu inventario
+        inventory_menu(con, inventory_title, player, 50, screen_width, screen_height) # Chama o menu inventario
     
     # Checa se jogador sobe de nivel e chama tela de levelup
     elif game_state == GameStates.LEVEL_UP:

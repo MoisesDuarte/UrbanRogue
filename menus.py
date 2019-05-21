@@ -31,12 +31,21 @@ def menu(con, header, options, width, screen_width, screen_height):
     libtcod.console_blit(window, 0, 0, width, height, 0, x, y, 1.0, 0.7)
     
 # Função para gerar menu de inventário
-def inventory_menu(con, header, inventory, inventory_width, screen_width, screen_height):
+def inventory_menu(con, header, player, inventory_width, screen_width, screen_height):
     # Mostra um menu com cada item do inventário como uma opção
-    if len(inventory.items) == 0:
+    if len(player.inventory.items) == 0:
         options = ['Inventário está vazio.']
     else:
-        options = [item.name for item in inventory.items]
+        options = []
+        
+        # Checagem para distinção entre equipamento e item comum
+        for item in player.inventory.items:
+            if player.equipment.main_hand == item:
+                options.append('{0} (Arma)'.format(item.name))
+            elif player.equipment.off_hand == item:
+                options.append('{0} (Defesa)'.format(item.name))
+            else:
+                options.append(item.name)
         
     menu(con, header, options, inventory_width, screen_width, screen_height)
     

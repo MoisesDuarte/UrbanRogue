@@ -4,6 +4,8 @@ from random import randint
 from render_functions import RenderOrder
 
 from components.ai import BasicMonster
+from components.equipment import EquipmentSlots
+from components.equippable import Equippable
 from components.fighter import Fighter
 from components.item import Item
 from components.stairs import Stairs
@@ -142,7 +144,9 @@ class GameMap:
             }
             
         item_chances = {
-                'frasco_cura': 35, 
+                'frasco_cura': 35,
+                'espada': from_dungeon_level([[5, 4]], self.dungeon_level),
+                'escudo': from_dungeon_level([[15, 8]], self.dungeon_level), 
                 'scroll_relampago': from_dungeon_level([[25, 4]], self.dungeon_level), 
                 'scroll_boladefogo': from_dungeon_level([[25, 6]], self.dungeon_level), 
                 'scroll_confusao': from_dungeon_level([[10, 2]], self.dungeon_level)
@@ -178,6 +182,12 @@ class GameMap:
                 if item_choice == 'frasco_cura':     
                     item_component = Item(use_function=heal, amount=40) # Define o item como um item de cura +4 hp
                     item = Entity(x, y, '!', libtcod.violet, 'Frasco de Cura', render_order=RenderOrder.ITEM, item=item_component)
+                elif item_choice == 'espada':
+                    equippable_component = Equippable(EquipmentSlots.MAIN_HAND, power_bonus=3)
+                    item = Entity(x, y, '/', libtcod.sky, 'Espada', equippable=equippable_component)
+                elif item_choice == 'defesa':
+                    equippable_component = Equippable(EquipmentSlots.OFF_HAND, defense_bonus=1)
+                    item = Entity(x, y, '[', libtcod.darker_orange, 'Escudo', equippable=equippable_component)
                 elif item_choice == 'scroll_boladefogo':
                     item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message('Click em um tile para bola de fogo, ou click-direito para cancelar.', libtcod.light_cyan), damage=25, radius=3)
                     item = Entity(x, y, '#', libtcod.red, 'Scroll de Bola de Fogo', render_order=RenderOrder.ITEM, item=item_component)

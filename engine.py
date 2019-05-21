@@ -213,12 +213,12 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
         # Processando aumento de atributos em level up
         if level_up:
             if level_up == 'hp':
-                player.fighter.max_hp += 20
+                player.fighter.base_max_hp += 20
                 player.fighter.hp += 20
             elif level_up == 'str':
-                player.fighter.power += 1
+                player.fighter.base_power += 1
             elif level_up == 'def':
-                player.fighter.defense += 1
+                player.fighter.base_defense += 1
                 
             game_state = previous_game_state              
         
@@ -259,6 +259,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
             item_added = player_turn_result.get('item_added')
             item_consumed = player_turn_result.get('consumed')
             item_dropped = player_turn_result.get('item_dropped')
+            equip = player_turn_result.get('equip')
             targeting = player_turn_result.get('targeting')
             targeting_cancelled = player_turn_result.get('targeting_cancelled')
             xp = player_turn_result.get('xp')
@@ -290,6 +291,29 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
             if item_consumed:
                 game_state = GameStates.ENEMY_TURN
                 
+            # Descarte de item
+            if item_dropped:
+                entities.append(item_dropped)
+                
+                game_state = GameStates.ENEMY_TURN
+                
+            # Equipando item
+            if equip:
+                equip_results = player.equipment.toggle_equip(equip)
+                
+                for equip_result in equip_results:
+                    equipped = equip_result.get('equipped')
+                    dequipped = equip_result.get('dequipped')
+                    
+                    # Mensagens de equipamento
+                    if equipped:
+                        message_log.add_message(Message('Você equipou {0}'.format(equipped.name)))
+                        
+                    if dequipped:
+                        message_log.add_message(Message('Você tirou {0}'.format(dequipped.name)))
+                    
+                game_state = GameStates.ENEMY_TURN
+                
             # Mirando item
             if targeting:
                 previous_game_state = GameStates.PLAYERS_TURN
@@ -308,15 +332,7 @@ def play_game(player, entities, game_map, message_log, game_state, con, panel, c
                     message_log.add_message(Message('Você está cada vez mais forte! Você alcançou o nível {0}'.format(player.level.current_level) + '!', libtcod.yellow))
                     previous_game_state = game_state
                     game_state = GameStates.LEVEL_UP
-
-                
-            # Descarte de item
-            if item_dropped:
-                entities.append(item_dropped)
-                
-                game_state = GameStates.ENEMY_TURN
-                
-                        
+                                         
         # Controle de turno (Inimigo)
         if game_state == GameStates.ENEMY_TURN:
             for entity in entities:
