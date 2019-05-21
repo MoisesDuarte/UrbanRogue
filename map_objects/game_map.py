@@ -17,7 +17,7 @@ from item_functions import cast_confuse, cast_fireball, cast_lightning, heal
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
 
-from random_utils import random_choice_from_dict
+from random_utils import from_dungeon_level, random_choice_from_dict
 
 class GameMap:
     # Uma classe para inicialização de mapa
@@ -37,7 +37,7 @@ class GameMap:
         return tiles
     
     # Gerador de mapa (cavocando salas em um mapa totalmente sólido)
-    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities, max_monsters_per_room, max_items_per_room):
+    def make_map(self, max_rooms, room_min_size, room_max_size, map_width, map_height, player, entities):
         rooms = [] # Lista das salas geradas
         num_rooms = 0 # Guarda número de salas no mapa
         
@@ -94,7 +94,7 @@ class GameMap:
                         self.create_v_tunnel(prev_y, new_y, prev_x)
                         self.create_h_tunnel(prev_x, new_x, new_y)
                         
-                self.place_entities(new_room, entities, max_monsters_per_room, max_items_per_room) # Chama a função para gerar inimigos
+                self.place_entities(new_room, entities) # Chama a função para gerar inimigos
                         
                 rooms.append(new_room)
                 num_rooms += 1
@@ -127,13 +127,26 @@ class GameMap:
             self.tiles[x][y].block_sight = False
             
     # Gera e coloca entidades de jogo
-    def place_entities(self, room, entities, max_monsters_per_room, max_items_per_room):   
+    def place_entities(self, room, entities):   
+        # Definindo maximo de monstros e itens com base em nivel da dungeon
+        max_monsters_per_room = from_dungeon_level([[2, 1], [3, 4], [5, 6]], self.dungeon_level)
+        max_items_per_room = from_dungeon_level([[1, 1], [2, 4]], self.dungeon_level)
+    
         number_of_monsters = randint(0, max_monsters_per_room)  # Gera um número aleatório de inimigos para sala
         number_of_items = randint(0, max_items_per_room) # Gera um número aleatorio de itens para sala
         
         # Guardando as diferentes 'chances' de monstros e itens para algoritmo de randomização
-        monster_chances = {'orc': 80, 'troll': 20}
-        item_chances = {'frasco_cura': 70, 'scroll_relampago': 10, 'scroll_boladefogo': 10, 'scroll_confusao': 10}
+        monster_chances = {
+                'orc': 80, 
+                'troll': from_dungeon_level([[15, 3], [30, 5], [60, 7]], self.dungeon_level)
+            }
+            
+        item_chances = {
+                'frasco_cura': 35, 
+                'scroll_relampago': from_dungeon_level([[25, 4]], self.dungeon_level), 
+                'scroll_boladefogo': from_dungeon_level([[25, 6]], self.dungeon_level), 
+                'scroll_confusao': from_dungeon_level([[10, 2]], self.dungeon_level)
+            }
         
         # Colocando os inimigos em espaços aleatorios do mapa
         for i in range(number_of_monsters):
@@ -194,8 +207,7 @@ class GameMap:
         # Gera as tiles do novo piso
         self.tiles = self.initialize_tiles()
         self.make_map(constants['max_rooms'], constants['room_min_size'], constants['room_max_size'],
-                    constants['map_width'], constants['map_height'], player, entities,
-                    constants['max_monsters_per_room'], constants['max_items_per_room'])
+                    constants['map_width'], constants['map_height'], player, entities)
         
         # Metade do hp de volta
         player.fighter.heal(player.fighter.max_hp // 2)
