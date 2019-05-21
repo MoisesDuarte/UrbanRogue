@@ -17,6 +17,8 @@ from item_functions import cast_confuse, cast_fireball, cast_lightning, heal
 from map_objects.rectangle import Rect
 from map_objects.tile import Tile
 
+from random_utils import random_choice_from_dict
+
 class GameMap:
     # Uma classe para inicialização de mapa
     
@@ -129,13 +131,19 @@ class GameMap:
         number_of_monsters = randint(0, max_monsters_per_room)  # Gera um número aleatório de inimigos para sala
         number_of_items = randint(0, max_items_per_room) # Gera um número aleatorio de itens para sala
         
+        # Guardando as diferentes 'chances' de monstros e itens para algoritmo de randomização
+        monster_chances = {'orc': 80, 'troll': 20}
+        item_chances = {'frasco_cura': 70, 'scroll_relampago': 10, 'scroll_boladefogo': 10, 'scroll_confusao': 10}
+        
         # Colocando os inimigos em espaços aleatorios do mapa
         for i in range(number_of_monsters):
             x = randint(room.x1 + 1, room.x2 - 1)
             y = randint(room.y1 + 1, room.y2 - 1)
             
             if not any([entity for entity in entities if entity.x == x and entity.y == y]): # Checa se já não há um inimigo nas mesmas coordenadas
-                if randint(0, 100) < 80:
+                monster_choice = random_choice_from_dict(monster_chances) # Chamando a função de randomizacao para escolhar um monstro randomico em array
+                
+                if monster_choice == 'orc':
                     fighter_component = Fighter(hp=10, defense=0, power=3, xp=35)
                     ai_component = BasicMonster()               
                     monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
@@ -152,15 +160,15 @@ class GameMap:
             y = randint(room.y1 + 1, room.y2 - 1)
             
             if not any([entity for entity in entities if entity.x == x and entity.y == y]):
-                item_chance = randint(0, 100)
+                item_choice = random_choice_from_dict(item_chances) # O mesmo que a chamada da função para monstros acima
                 
-                if item_chance < 70:     
+                if item_choice == 'frasco_cura':     
                     item_component = Item(use_function=heal, amount=4) # Define o item como um item de cura +4 hp
                     item = Entity(x, y, '!', libtcod.violet, 'Frasco de Cura', render_order=RenderOrder.ITEM, item=item_component)
-                elif item_chance < 80:
+                elif item_choice == 'scroll_boladefogo':
                     item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message('Click em um tile para bola de fogo, ou click-direito para cancelar.', libtcod.light_cyan), damage=12, radius=3)
                     item = Entity(x, y, '#', libtcod.red, 'Scroll de Bola de Fogo', render_order=RenderOrder.ITEM, item=item_component)
-                elif item_chance < 90:
+                elif item_choice == 'scroll_confusao':
                     item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message("Click em um inimigo para confundir, ou click-direito para cancelar.", libtcod.light_cyan))
                     item = Entity(x, y, '#', libtcod.light_pink, 'Scroll de Confusão', render_order=RenderOrder.ITEM, item=item_component)
                 else:
