@@ -19,9 +19,10 @@ Um roguelike básico programado em Python 3.7 com biblioteca Libtcod
 > py engine.py
 
 ## To-Do (em desenvolvimento)
-- [ ] Completar base lógica do jogo
-- [ ] Implementar efeitos sonoros (Biblioteca PyGame)
-- [ ] Implementar leitura para mapas estáticos como cidades, etc.
+* [x] Base lógica do jogo
+* [ ] Implementar efeitos sonoros
+* [ ] Implementar leitura para mapas estáticos como cidades, etc.
+
 
 
 ## Referências
