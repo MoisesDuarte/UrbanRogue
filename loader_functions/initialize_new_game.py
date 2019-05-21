@@ -87,7 +87,7 @@ def get_constants():
 # Inicializa todas as variaveis dinamicas referentes a inicialização do jogo
 def get_game_variables(constants):
     # Inicialização do Jogador
-    fighter_component = Fighter(hp=30, defense=2, power=5)
+    fighter_component = Fighter(hp=100, defense=1, power=4)
     Inventory_component = Inventory(26)
     level_component = Level()
     player = Entity(0, 0, '@', libtcod.white, 'Jogador', blocks=True, render_order=RenderOrder.ACTOR,

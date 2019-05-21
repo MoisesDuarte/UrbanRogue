@@ -157,11 +157,11 @@ class GameMap:
                 monster_choice = random_choice_from_dict(monster_chances) # Chamando a função de randomizacao para escolhar um monstro randomico em array
                 
                 if monster_choice == 'orc':
-                    fighter_component = Fighter(hp=10, defense=0, power=3, xp=35)
+                    fighter_component = Fighter(hp=20, defense=0, power=4, xp=35)
                     ai_component = BasicMonster()               
                     monster = Entity(x, y, 'o', libtcod.desaturated_green, 'Orc', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
                 else:
-                    fighter_component = Fighter(hp=16, defense=1, power=4, xp=100)
+                    fighter_component = Fighter(hp=30, defense=2, power=8, xp=100)
                     ai_component = BasicMonster()           
                     monster = Entity(x, y, 'T', libtcod.darker_green, 'Troll', blocks=True, render_order=RenderOrder.ACTOR, fighter=fighter_component, ai=ai_component)
                     
@@ -176,16 +176,16 @@ class GameMap:
                 item_choice = random_choice_from_dict(item_chances) # O mesmo que a chamada da função para monstros acima
                 
                 if item_choice == 'frasco_cura':     
-                    item_component = Item(use_function=heal, amount=4) # Define o item como um item de cura +4 hp
+                    item_component = Item(use_function=heal, amount=40) # Define o item como um item de cura +4 hp
                     item = Entity(x, y, '!', libtcod.violet, 'Frasco de Cura', render_order=RenderOrder.ITEM, item=item_component)
                 elif item_choice == 'scroll_boladefogo':
-                    item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message('Click em um tile para bola de fogo, ou click-direito para cancelar.', libtcod.light_cyan), damage=12, radius=3)
+                    item_component = Item(use_function=cast_fireball, targeting=True, targeting_message=Message('Click em um tile para bola de fogo, ou click-direito para cancelar.', libtcod.light_cyan), damage=25, radius=3)
                     item = Entity(x, y, '#', libtcod.red, 'Scroll de Bola de Fogo', render_order=RenderOrder.ITEM, item=item_component)
                 elif item_choice == 'scroll_confusao':
                     item_component = Item(use_function=cast_confuse, targeting=True, targeting_message=Message("Click em um inimigo para confundir, ou click-direito para cancelar.", libtcod.light_cyan))
                     item = Entity(x, y, '#', libtcod.light_pink, 'Scroll de Confusão', render_order=RenderOrder.ITEM, item=item_component)
                 else:
-                    item_component = Item(use_function=cast_lightning, damage=20, maximum_range=5) # Define o item como uma scroll de relampago, dano 20, range 5
+                    item_component = Item(use_function=cast_lightning, damage=40, maximum_range=5) # Define o item como uma scroll de relampago, dano 20, range 5
                     item = Entity(x, y, '#', libtcod.yellow, 'Scroll de Relampago', render_order=RenderOrder.ITEM, item=item_component)
                     
                 entities.append(item)
